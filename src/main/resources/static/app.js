@@ -235,6 +235,7 @@ document.querySelector("#print-button").addEventListener("click", () => {
 document.querySelector("#clear-button").addEventListener("click", () => {
   if (!window.confirm("Clear this resume draft from this browser? This cannot be undone.")) return;
   window.clearTimeout(saveTimer);
+  saveTimer = undefined;
   resume = createInitialResume();
   populateForm();
   renderPreview();
