@@ -1,4 +1,4 @@
-import { createEntry, loadResume, STORAGE_KEY } from "./resume-data.mjs";
+import { createEntry, createInitialResume, loadResume, STORAGE_KEY } from "./resume-data.mjs";
 
 const form = document.querySelector("#resume-form");
 const saveState = document.querySelector("#save-state");
@@ -202,11 +202,17 @@ document.querySelector("#print-button").addEventListener("click", () => {
 
 document.querySelector("#clear-button").addEventListener("click", () => {
   if (!window.confirm("Clear this resume draft from this browser? This cannot be undone.")) return;
-  resume = structuredClone(initialResume);
-  localStorage.removeItem(STORAGE_KEY);
+  window.clearTimeout(saveTimer);
+  resume = createInitialResume();
   populateForm();
   renderPreview();
-  saveState.textContent = "Draft cleared";
+
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+    saveState.textContent = "Draft cleared";
+  } catch {
+    saveState.textContent = "Could not clear saved draft";
+  }
 });
 
 populateForm();
