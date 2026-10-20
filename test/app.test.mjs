@@ -8,6 +8,7 @@ const appPath = pathToFileURL(
   new URL("../src/main/resources/static/app.js", import.meta.url).pathname,
 ).href;
 const html = await readFile(new URL("../src/main/resources/static/index.html", import.meta.url), "utf8");
+const styles = await readFile(new URL("../src/main/resources/static/styles.css", import.meta.url), "utf8");
 let dom;
 let importNumber = 0;
 
@@ -321,6 +322,15 @@ test("paper size selector configures letter or A4 print dimensions", async () =>
   selector.value = "letter";
   selector.dispatchEvent(new window.Event("change", { bubbles: true }));
   assert.match(document.querySelector("#print-page-style").textContent, /size:\s*letter/);
+});
+
+test("print styles declare page dimensions and hide editor controls", () => {
+  assert.match(styles, /@page\s*\{\s*size:\s*letter;\s*margin:\s*0\.55in;\s*\}/);
+
+  const printStyles = styles.match(/@media print\s*\{([\s\S]*)\}\s*$/)?.[1];
+  assert.ok(printStyles, "print media rules should be present at the end of the stylesheet");
+  assert.match(printStyles, /\.topbar,\s*\.editor,\s*\.preview-toolbar,\s*noscript\s*\{\s*display:\s*none\s*!important;/);
+  assert.match(printStyles, /\.resume-paper\s*\{[^}]*padding:\s*0;/);
 });
 
 test("role directory links can prefill a title without replacing an existing title", async () => {
