@@ -3,6 +3,7 @@ import {
   createInitialResume,
   ENTRY_FIELDS,
   ENTRY_TYPES,
+  hasResumeContent,
   loadResume,
   normalizeResume,
   STORAGE_KEY,
@@ -155,18 +156,23 @@ function renderPreview() {
   const preview = createResumePreview(document, resume);
   preview.id = "resume-preview";
   document.querySelector("#resume-preview").replaceWith(preview);
-  const skills = resume.skills.split(/[,\n]/).map((skill) => skill.trim()).filter(Boolean);
-  renderQualityCheck(skills);
+  renderQualityCheck();
 }
 
-function renderQualityCheck(skills) {
-  const hasEntryContent = ["experience", "education", "projects", "certifications", "languages"]
-    .some((type) => resume[type].some((entry) => Object.values(entry).some((value) => value.trim())));
+function renderQualityCheck() {
+  const hasRelevantSections = hasResumeContent(resume, [
+    "experience",
+    "education",
+    "projects",
+    "certifications",
+    "languages",
+    "skills",
+  ]);
   const checks = [
     ["Add your name and professional title", Boolean(resume.name.trim() && resume.title.trim())],
     ["Add at least one way to contact you", Boolean(resume.email.trim() || resume.phone.trim() || resume.website.trim())],
     ["Write a short professional summary", Boolean(resume.summary.trim())],
-    ["Include relevant experience, education, projects, or skills", hasEntryContent || skills.length > 0],
+    ["Include relevant experience, education, projects, or skills", hasRelevantSections],
   ];
   const list = document.querySelector("#quality-check-list");
   list.replaceChildren(...checks.map(([label, complete]) => {

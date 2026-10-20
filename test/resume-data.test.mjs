@@ -6,6 +6,7 @@ import {
   createEntryFor,
   ENTRY_FIELDS,
   ENTRY_TYPES,
+  hasResumeContent,
   loadResume,
   normalizeResume,
   safeWebsiteUrl,
@@ -200,4 +201,13 @@ test("template selection preserves the normalized local resume", () => {
       throw new Error("Storage is full");
     },
   }), false);
+});
+
+test("resume content detection checks text and structured sections safely", () => {
+  assert.equal(hasResumeContent({ name: " " }), false);
+  assert.equal(hasResumeContent({ template: "classic", experience: [] }, ["experience"]), false);
+  assert.equal(
+    hasResumeContent({ experience: [{ role: "Designer", organization: "", start: "", end: "", description: "" }] }),
+    true,
+  );
 });

@@ -98,6 +98,18 @@ export function normalizeResume(saved) {
   };
 }
 
+export function hasResumeContent(resume, fields = Object.keys(resume)) {
+  return fields.some((field) => {
+    const value = resume[field];
+    if (Array.isArray(value)) {
+      return value.some((entry) => Object.values(entry).some(
+        (item) => typeof item === "string" && item.trim(),
+      ));
+    }
+    return typeof value === "string" && value.trim().length > 0;
+  });
+}
+
 export function loadResume(storage) {
   try {
     const draftStorage = storage ?? globalThis.localStorage;

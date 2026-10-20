@@ -21,7 +21,10 @@ async function openGallery(draft = {}, { storage } = {}) {
   dom.window.localStorage.setItem("resumecraft-draft-v1", JSON.stringify(draft));
   const dialog = dom.window.document.querySelector("#template-preview-dialog");
   dialog.showModal = () => dialog.setAttribute("open", "");
-  dialog.close = () => dialog.removeAttribute("open");
+  dialog.close = () => {
+    dialog.removeAttribute("open");
+    dialog.dispatchEvent(new dom.window.Event("close"));
+  };
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
   globalThis.localStorage = dom.window.localStorage;
@@ -143,6 +146,17 @@ test("preview uses the saved resume and switches templates without changing the 
   assert.deepEqual(navigations, ["./"]);
 });
 
+test("closing the preview returns keyboard focus to the opening control", async () => {
+  await openGallery();
+  const opener = document.querySelector(".template-card-preview-action");
+  opener.focus();
+  opener.click();
+  assert.equal(document.querySelector("#template-preview-dialog").open, true);
+  document.querySelector("#template-dialog-close").click();
+  assert.equal(document.querySelector("#template-preview-dialog").open, false);
+  assert.equal(document.activeElement, opener);
+});
+
 test("card template actions persist the choice and navigate to the editor", async () => {
   const navigations = await openGallery({
     name: "Keep this name",
@@ -178,5 +192,23 @@ test("storage failures show an error and do not navigate", async () => {
   search.value = "minimal";
   search.dispatchEvent(new window.Event("input", { bubbles: true }));
   assert.match(status.textContent, /Could not save/i);
+  assert.deepEqual(navigations, []);
+});
+
+test("modal storage failures are announced inside the dialog", async () => {
+  const navigations = await openGallery({}, {
+    storage: {
+      getItem: (key) => dom.window.localStorage.getItem(key),
+      setItem() {
+        throw new Error("Storage is unavailable");
+      },
+    },
+  });
+  document.querySelector(".template-card-preview-action").click();
+  document.querySelector("#template-use-button").click();
+  const status = document.querySelector("#template-dialog-action-status");
+  assert.match(status.textContent, /Could not save/i);
+  assert.equal(status.hidden, false);
+  assert.equal(document.querySelector("#template-preview-dialog").open, true);
   assert.deepEqual(navigations, []);
 });

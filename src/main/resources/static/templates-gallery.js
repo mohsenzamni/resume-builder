@@ -1,4 +1,9 @@
-import { createInitialResume, loadResume, saveTemplateSelection } from "./resume-data.js";
+import {
+  createInitialResume,
+  hasResumeContent,
+  loadResume,
+  saveTemplateSelection,
+} from "./resume-data.js";
 import { createResumePreview } from "./resume-preview.js";
 import { templates, templateCategories } from "./templates.js";
 
@@ -45,6 +50,7 @@ export function initializeTemplateGallery({
   const cardCache = new Map();
   const navigateToEditor = navigate ?? (() => window.location.assign("./"));
   let draftStorage = storage;
+  let dialogOpener;
   try {
     draftStorage ??= window.localStorage;
   } catch {
@@ -52,13 +58,12 @@ export function initializeTemplateGallery({
   }
 
   const storedResume = loadResume(draftStorage);
-  const hasResumeContent = Object.entries(storedResume).some(([key, value]) =>
-    key !== "template" && (Array.isArray(value)
-      ? value.some((entry) => Object.values(entry).some((item) => item.trim()))
-      : value.trim()),
+  const hasDraftContent = hasResumeContent(
+    storedResume,
+    Object.keys(storedResume).filter((key) => key !== "template"),
   );
-  const previewResume = hasResumeContent ? storedResume : sampleResume;
-  document.querySelector("#template-sample-note").hidden = hasResumeContent;
+  const previewResume = hasDraftContent ? storedResume : sampleResume;
+  document.querySelector("#template-sample-note").hidden = hasDraftContent;
 
   function addOption(select, value, label) {
     const option = document.createElement("option");
@@ -78,7 +83,7 @@ export function initializeTemplateGallery({
     container.replaceChildren(preview);
   }
 
-  function openTemplatePreview(id) {
+  function openTemplatePreview(id, opener) {
     const template = templates.find((item) => item.id === id);
     if (!template) return;
     dialogSelect.value = template.id;
@@ -86,12 +91,17 @@ export function initializeTemplateGallery({
     document.querySelector("#template-dialog-description").textContent = template.description;
     renderTemplatePreview(template, dialogPreview, "", "dialog-");
     document.querySelector("#template-use-button").dataset.template = template.id;
-    if (!dialog.open) dialog.showModal();
+    if (!dialog.open) {
+      dialogOpener = opener ?? document.activeElement;
+      dialog.showModal();
+    }
   }
 
   function applyTemplate(id) {
     if (!saveTemplateSelection(id, draftStorage)) {
-      const status = document.querySelector("#template-action-status");
+      const status = document.querySelector(
+        dialog.open ? "#template-dialog-action-status" : "#template-action-status",
+      );
       status.textContent =
         "Could not save your choice. Check browser storage and try again.";
       status.hidden = false;
@@ -112,7 +122,8 @@ export function initializeTemplateGallery({
     previewButton.type = "button";
     previewButton.className = "template-card-preview-action";
     previewButton.setAttribute("aria-label", `Preview ${template.name} template`);
-    previewButton.addEventListener("click", () => openTemplatePreview(template.id));
+    previewButton.addEventListener("click", (event) =>
+      openTemplatePreview(template.id, event.currentTarget));
     preview.append(previewButton);
 
     const content = document.createElement("div");
@@ -128,7 +139,8 @@ export function initializeTemplateGallery({
       }),
     );
     titleRow.lastElementChild.setAttribute("aria-label", `Preview ${template.name} template`);
-    titleRow.lastElementChild.addEventListener("click", () => openTemplatePreview(template.id));
+    titleRow.lastElementChild.addEventListener("click", (event) =>
+      openTemplatePreview(template.id, event.currentTarget));
 
     const description = document.createElement("p");
     description.textContent = template.description;
@@ -181,6 +193,10 @@ export function initializeTemplateGallery({
   });
   document.querySelector("#template-dialog-close").addEventListener("click", () => dialog.close());
   dialogSelect.addEventListener("change", () => openTemplatePreview(dialogSelect.value));
+  dialog.addEventListener("close", () => {
+    if (dialogOpener?.isConnected) dialogOpener.focus();
+    dialogOpener = undefined;
+  });
   document.querySelector("#template-use-button").addEventListener("click", (event) => {
     applyTemplate(event.currentTarget.dataset.template);
   });
