@@ -194,4 +194,10 @@ test("template selection preserves the normalized local resume", () => {
   assert.equal(stored.experience[0].organization, "Northstar");
   assert.equal(saveTemplateSelection("not-a-template", storage), false);
   assert.equal(stored.template, "executive");
+  assert.equal(saveTemplateSelection("minimal", {
+    getItem: () => null,
+    setItem() {
+      throw new Error("Storage is full");
+    },
+  }), false);
 });

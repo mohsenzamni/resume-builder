@@ -30,7 +30,7 @@ Drafts, including the selected template, are saved in the current browser's loca
 
 ## Test
 
-Run `mvn test` for backend tests and `npm test` for draft normalization, editor, import/export, AI interaction, and role-directory tests.
+Run `mvn test` for backend tests and `npm test` for draft normalization, editor, import/export, AI interaction, role-directory, and template-gallery tests.
 
 ### Optional AI setup
 
