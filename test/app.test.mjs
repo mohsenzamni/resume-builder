@@ -123,3 +123,56 @@ test("invalid entry actions do not mutate resume data", async () => {
   assert.equal(document.querySelectorAll("#experience-list .entry-card").length, 1);
   assert.equal(document.querySelectorAll("#education-list .entry-card").length, 0);
 });
+
+test("moving an entry updates preview, persists order, and focuses its next control", async () => {
+  await openApp({
+    experience: [
+      { role: "Designer", organization: "First Company" },
+      { role: "Researcher", organization: "Second Company" },
+    ],
+  });
+
+  document.querySelector('[data-move="experience"][data-index="1"][data-direction="up"]').click();
+  window.dispatchEvent(new window.Event("pagehide"));
+
+  const preview = document.querySelector("#experience-preview").textContent;
+  assert.ok(preview.indexOf("Researcher") < preview.indexOf("Designer"));
+  assert.equal(
+    document.activeElement,
+    document.querySelector('[data-move="experience"][data-index="0"][data-direction="down"]'),
+  );
+  assert.deepEqual(
+    JSON.parse(localStorage.getItem("resumecraft-draft-v1")).experience.map((entry) => entry.role),
+    ["Researcher", "Designer"],
+  );
+});
+
+test("reordering controls are disabled at the ends and cannot move past a boundary", async () => {
+  await openApp({
+    education: [
+      { role: "B.A.", organization: "First School" },
+      { role: "M.A.", organization: "Second School" },
+    ],
+  });
+
+  const upButton = document.querySelector(
+    '[data-move="education"][data-index="0"][data-direction="up"]',
+  );
+  const downButton = document.querySelector(
+    '[data-move="education"][data-index="1"][data-direction="down"]',
+  );
+  assert.equal(upButton.disabled, true);
+  assert.equal(downButton.disabled, true);
+
+  upButton.disabled = false;
+  upButton.click();
+  downButton.disabled = false;
+  downButton.click();
+
+  assert.deepEqual(
+    [...document.querySelectorAll("#education-preview .resume-entry strong")].map(
+      (entry) => entry.textContent,
+    ),
+    ["B.A.", "M.A."],
+  );
+});

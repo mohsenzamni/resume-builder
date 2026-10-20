@@ -312,6 +312,35 @@ textarea:focus-visible {
   font-weight: 700;
 }
 
+.entry-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.reorder-entry {
+  display: inline-grid;
+  width: 25px;
+  height: 25px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  color: #566076;
+  font-size: 13px;
+}
+
+.reorder-entry:hover:not(:disabled) {
+  border-color: #cfd4e4;
+  background: #f8f8ff;
+  color: var(--accent);
+}
+
+.reorder-entry:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 .remove-entry {
   padding: 3px 0 3px 8px;
   border: 0;

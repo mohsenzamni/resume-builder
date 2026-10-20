@@ -47,7 +47,11 @@ function renderEntryForm(type) {
         <article class="entry-card">
           <div class="entry-card-header">
             <span>${type === "experience" ? "POSITION" : "EDUCATION"} ${index + 1}</span>
-            <button class="remove-entry" data-remove="${type}" data-index="${index}" type="button" aria-label="Remove ${type} entry ${index + 1}">Remove</button>
+            <div class="entry-actions">
+              <button class="reorder-entry" data-move="${type}" data-index="${index}" data-direction="up" type="button" aria-label="Move ${type} entry ${index + 1} up" ${index === 0 ? "disabled" : ""}>↑</button>
+              <button class="reorder-entry" data-move="${type}" data-index="${index}" data-direction="down" type="button" aria-label="Move ${type} entry ${index + 1} down" ${index === entries.length - 1 ? "disabled" : ""}>↓</button>
+              <button class="remove-entry" data-remove="${type}" data-index="${index}" type="button" aria-label="Remove ${type} entry ${index + 1}">Remove</button>
+            </div>
           </div>
           <div class="entry-fields">
             <label class="field field-wide">
@@ -200,6 +204,39 @@ document.addEventListener("click", (event) => {
     renderPreview();
     saveDraft();
     document.querySelector(`#${type}-list .entry-card:last-child input`)?.focus();
+    return;
+  }
+
+  const moveButton = event.target.closest("[data-move]");
+  if (moveButton) {
+    const { move: type, index, direction } = moveButton.dataset;
+    const entryIndex = Number(index);
+    if (
+      !ENTRY_TYPES.includes(type) ||
+      !Number.isInteger(entryIndex) ||
+      entryIndex < 0 ||
+      entryIndex >= resume[type].length ||
+      !["up", "down"].includes(direction)
+    ) {
+      return;
+    }
+
+    const nextIndex = entryIndex + (direction === "up" ? -1 : 1);
+    if (nextIndex < 0 || nextIndex >= resume[type].length) return;
+
+    [resume[type][entryIndex], resume[type][nextIndex]] = [
+      resume[type][nextIndex],
+      resume[type][entryIndex],
+    ];
+    renderEntryForm(type);
+    renderPreview();
+    saveDraft();
+    const focusDirection = direction === "up" ? "down" : "up";
+    document
+      .querySelector(
+        `[data-move="${type}"][data-index="${nextIndex}"][data-direction="${focusDirection}"]`,
+      )
+      ?.focus();
     return;
   }
 
