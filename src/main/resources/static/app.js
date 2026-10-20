@@ -5,12 +5,12 @@ import {
   ENTRY_TYPES,
   loadResume,
   normalizeResume,
-  safeWebsiteUrl,
   STORAGE_KEY,
   TEMPLATES,
-  websiteDisplayText,
 } from "./resume-data.js";
 import { jobRoles } from "./job-roles.js";
+import { createResumePreview } from "./resume-preview.js";
+import { templates } from "./templates.js";
 
 const sectionConfig = {
   experience: {
@@ -90,11 +90,6 @@ function escapeHtml(value) {
   });
 }
 
-function setText(selector, value, fallback = "") {
-  const element = document.querySelector(selector);
-  element.textContent = value || fallback;
-}
-
 function aiControls(target) {
   return `
     <button class="button button-quiet ai-rewrite" data-ai-rewrite="${target}" type="button" hidden>
@@ -156,64 +151,11 @@ function renderEntryForm(type) {
   setAIAvailability(aiAvailable);
 }
 
-function renderEntriesPreview(type) {
-  const container = document.querySelector(`#${type}-preview`);
-  const entries = resume[type].filter((entry) =>
-    ENTRY_FIELDS[type].some((field) => entry[field]),
-  );
-  const section = document.querySelector(`#${type}-preview-section`);
-  section.hidden = entries.length === 0;
-
-  container.innerHTML = entries
-    .map((entry) => {
-      const dateRange = [entry.start, entry.end].filter(Boolean).join(" – ");
-      return `
-        <article class="resume-entry">
-          <div class="resume-entry-heading">
-            <strong>${escapeHtml(entry.role || entry.organization)}</strong>
-            ${dateRange ? `<span class="resume-entry-dates">${escapeHtml(dateRange)}</span>` : ""}
-          </div>
-          ${entry.role && entry.organization ? `<p class="resume-entry-subtitle">${escapeHtml(entry.organization)}</p>` : ""}
-          ${entry.proficiency ? `<p class="resume-entry-subtitle">${escapeHtml(entry.proficiency)}</p>` : ""}
-          ${entry.description ? `<p class="resume-entry-description">${escapeHtml(entry.description)}</p>` : ""}
-        </article>`;
-    })
-    .join("");
-}
-
 function renderPreview() {
-  setText('[data-preview="name"]', resume.name, "Your Name");
-  setText('[data-preview="title"]', resume.title, "Professional Title");
-  document.querySelector("#resume-preview").dataset.template = resume.template;
-  setText('[data-preview="email"]', resume.email);
-  setText('[data-preview="phone"]', resume.phone);
-  setText('[data-preview="location"]', resume.location);
-
-  const website = document.querySelector('[data-preview="website"]');
-  const safeUrl = safeWebsiteUrl(resume.website);
-  website.textContent = websiteDisplayText(resume.website);
-  if (safeUrl) {
-    website.href = safeUrl;
-  } else {
-    website.removeAttribute("href");
-  }
-  website.hidden = !safeUrl;
-
-  const summarySection = document.querySelector("#summary-preview-section");
-  summarySection.hidden = !resume.summary.trim();
-  setText('[data-preview="summary"]', resume.summary);
-
-  ENTRY_TYPES.forEach(renderEntriesPreview);
-
-  const skills = resume.skills
-    .split(/[,\n]/)
-    .map((skill) => skill.trim())
-    .filter(Boolean);
-  const skillsSection = document.querySelector("#skills-preview-section");
-  skillsSection.hidden = skills.length === 0;
-  document.querySelector("#skills-preview").innerHTML = skills
-    .map((skill) => `<span class="skill-chip">${escapeHtml(skill)}</span>`)
-    .join("");
+  const preview = createResumePreview(document, resume);
+  preview.id = "resume-preview";
+  document.querySelector("#resume-preview").replaceWith(preview);
+  const skills = resume.skills.split(/[,\n]/).map((skill) => skill.trim()).filter(Boolean);
   renderQualityCheck(skills);
 }
 
@@ -251,6 +193,13 @@ function populateForm() {
   ENTRY_TYPES.forEach(renderEntryForm);
   templateSelect.value = resume.template;
 }
+
+templateSelect.replaceChildren(...templates.map((template) => {
+  const option = document.createElement("option");
+  option.value = template.id;
+  option.textContent = template.name;
+  return option;
+}));
 
 function persistDraft() {
   try {

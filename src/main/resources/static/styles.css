@@ -959,6 +959,265 @@ textarea:focus-visible {
   font-size: 11px;
 }
 
+.template-gallery {
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  padding: 48px 5.5% 72px;
+}
+
+.template-gallery-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.template-gallery-header h1 {
+  margin: 7px 0 8px;
+  color: var(--ink);
+  font-size: clamp(25px, 3vw, 34px);
+  letter-spacing: -0.7px;
+}
+
+.template-gallery-header p:not(.eyebrow) {
+  max-width: 620px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.template-count {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: white;
+  color: #4b5870;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.template-gallery-tools {
+  display: grid;
+  grid-template-columns: minmax(220px, 1.5fr) minmax(160px, 0.8fr) minmax(160px, 0.8fr) auto;
+  align-items: end;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+}
+
+.template-gallery-tools .field {
+  min-width: 0;
+}
+
+.template-gallery-tools input,
+.template-gallery-tools select {
+  min-height: 40px;
+}
+
+.template-result-count {
+  margin: 18px 0 12px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.template-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.template-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e2e7ef;
+  border-radius: 13px;
+  background: white;
+  box-shadow: 0 6px 20px rgb(28 38 56 / 4%);
+  transition: border-color 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+}
+
+.template-card:hover,
+.template-card:focus-within {
+  transform: translateY(-2px);
+  border-color: #c7cde4;
+  box-shadow: 0 12px 28px rgb(28 38 56 / 9%);
+}
+
+.template-card-preview {
+  display: block;
+  width: 100%;
+  height: 290px;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: #f2f4f8;
+  text-align: left;
+}
+
+.template-preview-action:focus-visible,
+.template-use-card:focus-visible,
+.template-dialog button:focus-visible,
+.template-dialog select:focus-visible {
+  outline: 3px solid rgb(81 91 207 / 45%);
+  outline-offset: 2px;
+}
+
+.template-thumbnail {
+  width: 128%;
+  min-height: 370px;
+  margin-left: -14%;
+  padding: 25px 34px;
+  transform: scale(0.78);
+  transform-origin: top center;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+.template-card-content {
+  display: flex;
+  min-height: 176px;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 16px 17px;
+}
+
+.template-card-title {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.template-card-title h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 16px;
+}
+
+.template-card-title .button {
+  min-height: 30px;
+  padding: 0 9px;
+}
+
+.template-card-content > p {
+  margin: 8px 0 11px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.template-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0 0 13px;
+  padding: 0;
+  list-style: none;
+}
+
+.template-tags li {
+  padding: 4px 7px;
+  border-radius: 12px;
+  background: #f1f3f8;
+  color: #536078;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.template-use-card {
+  min-height: 34px;
+  margin-top: auto;
+  font-size: 10px;
+}
+
+.template-empty {
+  padding: 36px 16px;
+  border: 1px dashed #cdd3df;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+.template-sample-note {
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.template-dialog {
+  width: min(920px, calc(100% - 28px));
+  max-width: none;
+  max-height: min(92vh, 1000px);
+  padding: 24px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #f5f7fb;
+  color: var(--ink);
+  box-shadow: 0 24px 80px rgb(19 28 45 / 30%);
+}
+
+.template-dialog::backdrop {
+  background: rgb(18 26 40 / 60%);
+  backdrop-filter: blur(2px);
+}
+
+.template-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.template-dialog-header h2 {
+  margin: 5px 0;
+  font-size: 22px;
+}
+
+.template-dialog-header p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.template-dialog-tools {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 20px 0 14px;
+}
+
+.template-dialog-tools .field {
+  width: min(260px, 100%);
+}
+
+.template-dialog-preview {
+  width: min(740px, 100%);
+  min-height: 650px;
+  margin: 0 auto;
+  padding: 28px;
+  background: #e9edf3;
+}
+
+.template-dialog-preview .resume-paper {
+  min-height: 780px;
+  padding: 52px;
+}
+
+.template-dialog-preview .resume-entry {
+  break-inside: avoid;
+}
+
 noscript {
   display: block;
   padding: 12px;
@@ -1047,6 +1306,96 @@ noscript {
   .directory-filters,
   .role-results {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .template-gallery-tools {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .template-search {
+    grid-column: 1 / -1;
+  }
+
+  .template-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .template-dialog {
+    padding: 18px;
+  }
+
+  .template-dialog-preview {
+    min-height: 0;
+    padding: 14px;
+  }
+
+  .template-dialog-preview .resume-paper {
+    min-height: 0;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 560px) {
+  .template-gallery {
+    padding: 32px 16px 48px;
+  }
+
+  .template-gallery-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .template-gallery-tools {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .template-search {
+    grid-column: auto;
+  }
+
+  .template-gallery-tools > .button {
+    justify-self: start;
+  }
+
+  .template-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .template-card-preview {
+    height: 300px;
+  }
+
+  .template-dialog {
+    width: calc(100% - 16px);
+    max-height: 96vh;
+    padding: 14px;
+  }
+
+  .template-dialog-header {
+    gap: 8px;
+  }
+
+  .template-dialog-header h2 {
+    font-size: 18px;
+  }
+
+  .template-dialog-tools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .template-dialog-tools .field {
+    width: 100%;
+  }
+
+  .template-dialog-preview {
+    padding: 8px;
+  }
+
+  .template-dialog-preview .resume-paper {
+    padding: 22px;
+    font-size: 9px;
   }
 }
 

@@ -6,6 +6,8 @@ The editor includes optional experience, education, projects, certifications, la
 
 The role directory currently contains 12 original, curated role guides with searchable prompts and example skills. They are starting points—not job-market research or requirements. You can export a local JSON backup or import a ResumeCraft JSON export.
 
+Browse the template gallery at `/templates.html` to search, filter by design category, compare previews, and apply a template. Gallery previews use the current browser draft, or clearly labeled sample content when the draft is empty. Template metadata is registered in `src/main/resources/static/templates.js`; add an entry there and matching `data-template` styles in `styles.css`. The gallery and editor share the renderer in `resume-preview.js`, and PDF output continues to use browser print.
+
 ## Run locally
 
 Requirements: Java 17+ and Maven.

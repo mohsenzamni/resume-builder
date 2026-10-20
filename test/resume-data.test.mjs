@@ -9,6 +9,7 @@ import {
   loadResume,
   normalizeResume,
   safeWebsiteUrl,
+  saveTemplateSelection,
   STORAGE_KEY,
   TEMPLATES,
   websiteDisplayText,
@@ -164,4 +165,33 @@ test("template preferences normalize to supported templates", () => {
   assert.equal(normalizeResume({ template: "modern" }).template, "modern");
   assert.equal(normalizeResume({ template: "executive" }).template, "executive");
   assert.equal(normalizeResume({ template: "unknown" }).template, "classic");
+});
+
+test("template selection preserves the normalized local resume", () => {
+  const original = {
+    name: "Jordan Lee",
+    title: "Product Designer",
+    summary: "Designing accessible products.",
+    experience: [{ role: "Designer", organization: "Northstar" }],
+    template: "classic",
+  };
+  let stored;
+  const storage = {
+    getItem(key) {
+      assert.equal(key, STORAGE_KEY);
+      return JSON.stringify(original);
+    },
+    setItem(key, value) {
+      assert.equal(key, STORAGE_KEY);
+      stored = JSON.parse(value);
+    },
+  };
+
+  assert.equal(saveTemplateSelection("executive", storage), true);
+  assert.equal(stored.template, "executive");
+  assert.equal(stored.name, original.name);
+  assert.equal(stored.summary, original.summary);
+  assert.equal(stored.experience[0].organization, "Northstar");
+  assert.equal(saveTemplateSelection("not-a-template", storage), false);
+  assert.equal(stored.template, "executive");
 });

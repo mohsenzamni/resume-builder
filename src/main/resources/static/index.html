@@ -20,6 +20,7 @@
         <span class="save-state" id="save-state" role="status" aria-live="polite">
           Saved on this device
         </span>
+        <a class="button button-quiet" href="./templates.html">Templates</a>
         <a class="button button-quiet" href="./directory.html">Role guides</a>
         <button class="button button-quiet" id="export-button" type="button">Export JSON</button>
         <button class="button button-quiet" id="import-button" type="button">Import JSON</button>
@@ -234,13 +235,7 @@
           <div class="preview-options">
             <label class="preview-select">
               <span class="visually-hidden">Resume template</span>
-              <select id="template-select" aria-label="Resume template">
-                <option value="classic">Classic</option>
-                <option value="modern">Modern</option>
-                <option value="minimal">Minimal</option>
-                <option value="executive">Executive</option>
-                <option value="compact">Compact</option>
-              </select>
+              <select id="template-select" aria-label="Resume template"></select>
             </label>
             <label class="preview-select">
               <span class="visually-hidden">PDF paper size</span>
@@ -251,46 +246,7 @@
             </label>
           </div>
         </div>
-        <article class="resume-paper" id="resume-preview" data-template="classic" aria-label="Resume preview">
-          <header class="resume-header">
-            <h1 data-preview="name">Your Name</h1>
-            <p class="resume-title" data-preview="title">Professional Title</p>
-            <div class="contact-line">
-              <span data-preview="email"></span>
-              <span data-preview="phone"></span>
-              <span data-preview="location"></span>
-              <a data-preview="website" target="_blank" rel="noopener noreferrer"></a>
-            </div>
-          </header>
-          <section class="resume-section" id="summary-preview-section">
-            <h2>Profile</h2>
-            <p class="resume-summary" data-preview="summary"></p>
-          </section>
-          <section class="resume-section" id="experience-preview-section">
-            <h2>Experience</h2>
-            <div id="experience-preview"></div>
-          </section>
-          <section class="resume-section" id="education-preview-section">
-            <h2>Education</h2>
-            <div id="education-preview"></div>
-          </section>
-          <section class="resume-section" id="projects-preview-section">
-            <h2>Projects</h2>
-            <div id="projects-preview"></div>
-          </section>
-          <section class="resume-section" id="certifications-preview-section">
-            <h2>Certifications</h2>
-            <div id="certifications-preview"></div>
-          </section>
-          <section class="resume-section" id="languages-preview-section">
-            <h2>Languages</h2>
-            <div id="languages-preview"></div>
-          </section>
-          <section class="resume-section" id="skills-preview-section">
-            <h2>Skills</h2>
-            <p class="skills-preview" id="skills-preview"></p>
-          </section>
-        </article>
+        <article class="resume-paper" id="resume-preview" data-template="classic" aria-label="Resume preview"></article>
       </section>
     </main>
     <noscript>This resume builder needs JavaScript enabled to edit and preview your resume.</noscript>

@@ -1,3 +1,5 @@
+import { TEMPLATES } from "./templates.js";
+
 export const STORAGE_KEY = "resumecraft-draft-v1";
 
 const initialResume = {
@@ -26,7 +28,7 @@ export const ENTRY_FIELDS = {
   languages: ["role", "proficiency"],
 };
 export const ENTRY_TYPES = Object.keys(ENTRY_FIELDS);
-export const TEMPLATES = ["classic", "modern", "minimal", "executive", "compact"];
+export { TEMPLATES };
 
 export function createInitialResume() {
   return {
@@ -102,5 +104,17 @@ export function loadResume(storage) {
     return normalizeResume(JSON.parse(draftStorage.getItem(STORAGE_KEY)));
   } catch {
     return createInitialResume();
+  }
+}
+
+export function saveTemplateSelection(template, storage = globalThis.localStorage) {
+  if (!TEMPLATES.includes(template)) return false;
+  try {
+    const resume = loadResume(storage);
+    resume.template = template;
+    storage.setItem(STORAGE_KEY, JSON.stringify(resume));
+    return true;
+  } catch {
+    return false;
   }
 }
