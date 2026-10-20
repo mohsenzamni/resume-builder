@@ -199,7 +199,7 @@ document.addEventListener("click", (event) => {
     renderEntryForm(type);
     renderPreview();
     saveDraft();
-    document.querySelector(`#${type}-list input`)?.focus();
+    document.querySelector(`#${type}-list .entry-card:last-child input`)?.focus();
     return;
   }
 

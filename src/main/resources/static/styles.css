@@ -9,10 +9,10 @@
   font-optical-sizing: auto;
   font-weight: 400;
   --ink: #1c2638;
-  --muted: #758097;
+  --muted: #5f6b80;
   --line: #e6eaf1;
-  --accent: #5e68e8;
-  --accent-dark: #4d57d3;
+  --accent: #515bcf;
+  --accent-dark: #444db7;
 }
 
 * {
@@ -253,7 +253,7 @@ textarea:focus-visible {
 
 .field input::placeholder,
 .field textarea::placeholder {
-  color: #a5adbd;
+  color: #667085;
 }
 
 .form-section > .field,
@@ -284,12 +284,12 @@ textarea:focus-visible {
   padding: 12px;
   border: 1px dashed #dce1ec;
   border-radius: 8px;
-  color: #8b94a7;
+  color: #667085;
   font-size: 11px;
 }
 
 .optional-label {
-  color: #9ba3b2;
+  color: #667085;
   font-size: 10px;
   font-weight: 400;
 }
@@ -307,7 +307,7 @@ textarea:focus-visible {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 12px;
-  color: #8b94a7;
+  color: #667085;
   font-size: 10px;
   font-weight: 700;
 }
@@ -339,7 +339,7 @@ textarea:focus-visible {
   align-items: flex-start;
   gap: 8px;
   margin: 8px 0 0;
-  color: #7c8699;
+  color: #667085;
   font-size: 11px;
   line-height: 1.6;
 }
@@ -377,7 +377,7 @@ textarea:focus-visible {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: #fff;
-  color: #788298;
+  color: #667085;
   font-size: 10px;
 }
 
@@ -487,7 +487,7 @@ textarea:focus-visible {
 }
 
 .resume-entry-dates {
-  color: #788298;
+  color: #667085;
   font-size: 9px;
 }
 
