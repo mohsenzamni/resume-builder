@@ -442,7 +442,6 @@ textarea:focus-visible {
 
 .resume-section {
   margin-top: 20px;
-  break-inside: avoid;
 }
 
 .resume-section h2 {
@@ -453,6 +452,7 @@ textarea:focus-visible {
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
+  break-after: avoid;
 }
 
 .resume-section p {
@@ -516,13 +516,6 @@ textarea:focus-visible {
   background: #f0f1ff;
   color: #4b54bf;
   font-size: 9px;
-}
-
-.preview-footnote {
-  margin: 12px 0 0;
-  color: #8b94a7;
-  font-size: 10px;
-  text-align: right;
 }
 
 .visually-hidden {
@@ -623,7 +616,6 @@ noscript {
   .topbar,
   .editor,
   .preview-toolbar,
-  .preview-footnote,
   noscript {
     display: none !important;
   }
@@ -662,8 +654,7 @@ noscript {
     font-size: 10pt;
   }
 
-  .resume-entry,
-  .resume-section {
+  .resume-entry {
     break-inside: avoid;
   }
 
