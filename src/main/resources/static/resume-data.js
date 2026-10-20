@@ -107,12 +107,13 @@ export function loadResume(storage) {
   }
 }
 
-export function saveTemplateSelection(template, storage = globalThis.localStorage) {
+export function saveTemplateSelection(template, storage) {
   if (!TEMPLATES.includes(template)) return false;
   try {
-    const resume = loadResume(storage);
+    const targetStorage = storage ?? globalThis.localStorage;
+    const resume = loadResume(targetStorage);
     resume.template = template;
-    storage.setItem(STORAGE_KEY, JSON.stringify(resume));
+    targetStorage.setItem(STORAGE_KEY, JSON.stringify(resume));
     return true;
   } catch {
     return false;

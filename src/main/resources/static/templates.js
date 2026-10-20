@@ -41,14 +41,6 @@ export const templates = [
   },
 ];
 
-export const templateCategories = [
-  "Professional",
-  "Modern",
-  "Minimal",
-  "Creative",
-  "Executive",
-  "Academic",
-  "Entry-Level",
-];
+export const templateCategories = [...new Set(templates.flatMap(({ categories }) => categories))];
 
 export const TEMPLATES = templates.map(({ id }) => id);

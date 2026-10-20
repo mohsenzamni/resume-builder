@@ -58,7 +58,7 @@ test("gallery displays registered templates and searches metadata", async () => 
   search.value = "ats-friendly";
   search.dispatchEvent(new window.Event("input", { bubbles: true }));
   assert.equal(document.querySelectorAll(".template-card").length, 1);
-  assert.equal(document.querySelector(".template-card h2").textContent, "Minimal");
+  assert.equal(document.querySelector(".template-card-content h2").textContent, "Minimal");
 
   search.value = "no-such-template";
   search.dispatchEvent(new window.Event("input", { bubbles: true }));
@@ -72,7 +72,7 @@ test("categories combine with search, sorting, and reset", async () => {
   category.value = "Executive";
   category.dispatchEvent(new window.Event("change", { bubbles: true }));
   assert.deepEqual(
-    [...document.querySelectorAll(".template-card h2")].map((heading) => heading.textContent),
+    [...document.querySelectorAll(".template-card-content h2")].map((heading) => heading.textContent),
     ["Executive", "Compact"],
   );
 
@@ -80,15 +80,17 @@ test("categories combine with search, sorting, and reset", async () => {
   search.value = "serif";
   search.dispatchEvent(new window.Event("input", { bubbles: true }));
   assert.deepEqual(
-    [...document.querySelectorAll(".template-card h2")].map((heading) => heading.textContent),
+    [...document.querySelectorAll(".template-card-content h2")].map((heading) => heading.textContent),
     ["Executive"],
   );
 
   category.value = "";
   category.dispatchEvent(new window.Event("change", { bubbles: true }));
+  search.value = "";
+  search.dispatchEvent(new window.Event("input", { bubbles: true }));
   document.querySelector("#template-sort").value = "alphabetical";
   document.querySelector("#template-sort").dispatchEvent(new window.Event("change", { bubbles: true }));
-  assert.equal(document.querySelector(".template-card h2").textContent, "Classic");
+  assert.equal(document.querySelector(".template-card-content h2").textContent, "Classic");
 
   document.querySelector("#template-reset").click();
   assert.equal(document.querySelectorAll(".template-card").length, templates.length);
