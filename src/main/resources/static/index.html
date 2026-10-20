@@ -47,6 +47,13 @@
           </p>
         </div>
 
+        <section class="quality-check" aria-labelledby="quality-check-heading">
+          <h2 id="quality-check-heading">Quick quality check</h2>
+          <p>Helpful reminders, not a score or a hiring guarantee. Only include details that are true.</p>
+          <p id="quality-check-progress" class="quality-check-progress" role="status" aria-live="polite"></p>
+          <ul id="quality-check-list"></ul>
+        </section>
+
         <form id="resume-form" autocomplete="on">
           <section class="form-section" aria-labelledby="personal-heading">
             <div class="section-heading">
@@ -230,6 +237,9 @@
               <select id="template-select" aria-label="Resume template">
                 <option value="classic">Classic</option>
                 <option value="modern">Modern</option>
+                <option value="minimal">Minimal</option>
+                <option value="executive">Executive</option>
+                <option value="compact">Compact</option>
               </select>
             </label>
             <label class="preview-select">

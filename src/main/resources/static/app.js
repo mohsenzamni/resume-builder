@@ -214,6 +214,33 @@ function renderPreview() {
   document.querySelector("#skills-preview").innerHTML = skills
     .map((skill) => `<span class="skill-chip">${escapeHtml(skill)}</span>`)
     .join("");
+  renderQualityCheck(skills);
+}
+
+function renderQualityCheck(skills = resume.skills.split(/[,\n]/).map((skill) => skill.trim()).filter(Boolean)) {
+  const hasEntryContent = ["experience", "education", "projects", "certifications", "languages"]
+    .some((type) => resume[type].some((entry) => Object.values(entry).some((value) => value.trim())));
+  const checks = [
+    ["Add your name and professional title", Boolean(resume.name.trim() && resume.title.trim())],
+    ["Add at least one way to contact you", Boolean(resume.email.trim() || resume.phone.trim() || resume.website.trim())],
+    ["Write a short professional summary", Boolean(resume.summary.trim())],
+    ["Include relevant experience, education, projects, or skills", hasEntryContent || skills.length > 0],
+  ];
+  const list = document.querySelector("#quality-check-list");
+  list.replaceChildren(...checks.map(([label, complete]) => {
+    const item = document.createElement("li");
+    item.className = complete ? "quality-check-complete" : "quality-check-pending";
+    const icon = document.createElement("span");
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = complete ? "✓" : "○";
+    const text = document.createElement("span");
+    text.textContent = label;
+    item.append(icon, text);
+    return item;
+  }));
+  const completed = checks.filter(([, complete]) => complete).length;
+  document.querySelector("#quality-check-progress").textContent =
+    `${completed} of ${checks.length} reminders addressed`;
 }
 
 function populateForm() {

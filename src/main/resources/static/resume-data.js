@@ -26,7 +26,7 @@ export const ENTRY_FIELDS = {
   languages: ["role", "proficiency"],
 };
 export const ENTRY_TYPES = Object.keys(ENTRY_FIELDS);
-export const TEMPLATES = ["classic", "modern"];
+export const TEMPLATES = ["classic", "modern", "minimal", "executive", "compact"];
 
 export function createInitialResume() {
   return {
