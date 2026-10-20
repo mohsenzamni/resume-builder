@@ -4,11 +4,13 @@ import {
   ENTRY_FIELDS,
   ENTRY_TYPES,
   loadResume,
+  normalizeResume,
   safeWebsiteUrl,
   STORAGE_KEY,
   TEMPLATES,
   websiteDisplayText,
 } from "./resume-data.js";
+import { jobRoles } from "./job-roles.js";
 
 const sectionConfig = {
   experience: {
@@ -63,8 +65,17 @@ const form = document.querySelector("#resume-form");
 const saveState = document.querySelector("#save-state");
 const templateSelect = document.querySelector("#template-select");
 const paperSizeSelect = document.querySelector("#paper-size-select");
+const importFile = document.querySelector("#import-file");
 let saveTimer;
 let resume = loadResume();
+let aiAvailable = false;
+const requestedRole = jobRoles.find(
+  (role) => role.slug === new URLSearchParams(window.location.search).get("role"),
+);
+const rolePrefilled = Boolean(requestedRole && !resume.title.trim());
+if (rolePrefilled) {
+  resume.title = requestedRole.title;
+}
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => {
@@ -84,6 +95,17 @@ function setText(selector, value, fallback = "") {
   element.textContent = value || fallback;
 }
 
+function aiControls(target) {
+  return `
+    <button class="button button-quiet ai-rewrite" data-ai-rewrite="${target}" type="button" hidden>
+      ✨ Improve with AI
+    </button>
+    <p class="ai-privacy-note" hidden>
+      Only this text and your professional title are sent to Google Gemini after confirmation.
+    </p>
+    <div class="ai-suggestion" data-ai-suggestion="${target}" hidden></div>`;
+}
+
 function renderEntryForm(type) {
   const list = document.querySelector(`#${type}-list`);
   const entries = resume[type];
@@ -100,13 +122,18 @@ function renderEntryForm(type) {
           .map(([key, label, placeholder, wide, elementType]) => {
             const control =
               elementType === "textarea"
-                ? `<textarea data-entry="${type}" data-index="${index}" data-key="${key}" rows="2" placeholder="${placeholder}">${escapeHtml(entry[key])}</textarea>`
+                ? `<textarea data-entry="${type}" data-index="${index}" data-key="${key}" rows="2" ${type === "experience" && key === "description" ? 'maxlength="3000"' : ""} placeholder="${placeholder}">${escapeHtml(entry[key])}</textarea>`
                 : `<input data-entry="${type}" data-index="${index}" data-key="${key}" value="${escapeHtml(entry[key])}" placeholder="${placeholder}" />`;
-            return `
+            const labelMarkup = `
               <label class="field${wide ? " field-wide" : ""}">
                 <span>${label}</span>
                 ${control}
               </label>`;
+            if (type === "experience" && key === "description") {
+              const target = `${type}:${index}`;
+              return `<div class="ai-field">${labelMarkup}${aiControls(target)}</div>`;
+            }
+            return labelMarkup;
           })
           .join("");
 
@@ -125,6 +152,7 @@ function renderEntryForm(type) {
       },
     )
     .join("");
+  setAIAvailability(aiAvailable);
 }
 
 function renderEntriesPreview(type) {
@@ -205,6 +233,116 @@ function persistDraft() {
   }
 }
 
+function setAIAvailability(available) {
+  aiAvailable = available;
+  document.querySelectorAll(".ai-rewrite, .ai-privacy-note").forEach((element) => {
+    element.hidden = !available;
+  });
+  document.querySelector("#ai-status").textContent = available
+    ? "AI suggestions are optional. Review each suggestion before applying it."
+    : "AI writing is currently unavailable; your resume still works and stays in this browser.";
+}
+
+async function checkAIAvailability() {
+  if (typeof window.fetch !== "function") {
+    setAIAvailability(false);
+    return;
+  }
+  try {
+    const response = await window.fetch("/api/v1/ai/status", { headers: { Accept: "application/json" } });
+    const status = response.ok ? await response.json() : null;
+    setAIAvailability(status?.available === true);
+  } catch {
+    setAIAvailability(false);
+  }
+}
+
+function getRewriteField(target) {
+  if (target === "summary") {
+    return { kind: "SUMMARY", field: form.elements.namedItem("summary") };
+  }
+  const match = /^experience:(\d+)$/.exec(target);
+  if (!match) return null;
+  const index = Number(match[1]);
+  if (!Number.isSafeInteger(index) || index < 0 || index >= resume.experience.length) return null;
+  return {
+    kind: "EXPERIENCE",
+    field: document.querySelector(
+      `#experience-list textarea[data-index="${index}"][data-key="description"]`,
+    ),
+  };
+}
+
+function renderAISuggestion(target, suggestion, field) {
+  const panel = document.querySelector(`[data-ai-suggestion="${target}"]`);
+  if (!panel) return;
+  panel.replaceChildren();
+
+  const text = document.createElement("p");
+  text.className = "ai-suggestion-copy";
+  text.textContent = suggestion;
+  const actions = document.createElement("div");
+  actions.className = "ai-suggestion-actions";
+  const applyButton = document.createElement("button");
+  applyButton.className = "button button-primary";
+  applyButton.type = "button";
+  applyButton.textContent = "Use suggestion";
+  applyButton.addEventListener("click", () => {
+    field.value = suggestion;
+    field.dispatchEvent(new window.Event("input", { bubbles: true }));
+    panel.hidden = true;
+    field.focus();
+  });
+  const dismissButton = document.createElement("button");
+  dismissButton.className = "button button-quiet";
+  dismissButton.type = "button";
+  dismissButton.textContent = "Dismiss";
+  dismissButton.addEventListener("click", () => {
+    panel.hidden = true;
+  });
+  actions.append(applyButton, dismissButton);
+  panel.append(text, actions);
+  panel.hidden = false;
+}
+
+async function requestRewrite(button) {
+  const target = button.dataset.aiRewrite;
+  const rewrite = getRewriteField(target);
+  if (!rewrite?.field || !rewrite.field.value.trim()) return;
+  if (!window.confirm(
+    "Send only this selected text and your professional title to Google Gemini for a rewrite? " +
+    "Your other resume details are not sent. Review the suggestion before applying it.",
+  )) return;
+
+  button.disabled = true;
+  button.textContent = "Working…";
+  try {
+    const response = await window.fetch("/api/v1/ai/rewrite", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        kind: rewrite.kind,
+        text: rewrite.field.value,
+        role: resume.title,
+      }),
+    });
+    if (!response.ok) throw new Error("AI writing request failed");
+    const result = await response.json();
+    if (typeof result.suggestion !== "string" || !result.suggestion.trim()) {
+      throw new Error("AI provider returned an empty suggestion");
+    }
+    renderAISuggestion(target, result.suggestion, rewrite.field);
+    document.querySelector("#ai-status").textContent =
+      "Suggestion ready. Review it carefully; it has not changed your resume.";
+  } catch {
+    document.querySelector("#ai-status").textContent =
+      "Could not get an AI suggestion. Your original text has not changed.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "✨ Improve with AI";
+  }
+}
+
 function saveDraft() {
   saveState.textContent = "Saving…";
   window.clearTimeout(saveTimer);
@@ -221,8 +359,63 @@ window.addEventListener("pagehide", () => {
   persistDraft();
 });
 
+document.querySelector("#export-button").addEventListener("click", () => {
+  const payload = {
+    format: "ResumeCraft",
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    resume,
+  };
+  const blob = new window.Blob([JSON.stringify(payload, null, 2)], {
+    type: "application/json",
+  });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "resumecraft-resume.json";
+  link.click();
+  window.URL.revokeObjectURL(url);
+  saveState.textContent = "Resume exported";
+});
+
+document.querySelector("#import-button").addEventListener("click", () => importFile.click());
+importFile.addEventListener("change", async () => {
+  const file = importFile.files?.[0];
+  if (!file) return;
+  try {
+    if (file.size > 1_000_000) throw new Error("File is too large.");
+    const payload = JSON.parse(await file.text());
+    if (
+      !payload ||
+      typeof payload !== "object" ||
+      Array.isArray(payload) ||
+      payload.format !== "ResumeCraft" ||
+      payload.version !== 1 ||
+      !payload.resume ||
+      typeof payload.resume !== "object" ||
+      Array.isArray(payload.resume)
+    ) {
+      throw new Error("This is not a supported ResumeCraft export.");
+    }
+    if (!window.confirm("Replace the current browser draft with the imported resume?")) return;
+    window.clearTimeout(saveTimer);
+    saveTimer = undefined;
+    resume = normalizeResume(payload.resume);
+    populateForm();
+    renderPreview();
+    persistDraft();
+    saveState.textContent = "Imported and saved on this device";
+  } catch (error) {
+    saveState.textContent = error.message || "Could not import this resume.";
+  } finally {
+    importFile.value = "";
+  }
+});
+
 form.addEventListener("input", (event) => {
   const target = event.target;
+  const suggestion = target.closest(".ai-field")?.querySelector(".ai-suggestion");
+  if (suggestion) suggestion.hidden = true;
   if (target.dataset.entry) {
     const { entry, index, key } = target.dataset;
     const entryIndex = Number(index);
@@ -245,6 +438,12 @@ form.addEventListener("input", (event) => {
 });
 
 document.addEventListener("click", (event) => {
+  const aiButton = event.target.closest("[data-ai-rewrite]");
+  if (aiButton) {
+    void requestRewrite(aiButton);
+    return;
+  }
+
   const addButton = event.target.closest("[data-add]");
   if (addButton) {
     const type = addButton.dataset.add;
@@ -358,3 +557,5 @@ document.querySelector("#clear-button").addEventListener("click", () => {
 
 populateForm();
 renderPreview();
+if (rolePrefilled) persistDraft();
+void checkAIAvailability();

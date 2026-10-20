@@ -73,6 +73,7 @@ button {
 
 .topbar-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 14px;
 }
@@ -233,7 +234,8 @@ textarea:focus-visible {
 }
 
 .field input,
-.field textarea {
+.field textarea,
+.field select {
   width: 100%;
   min-height: 39px;
   padding: 10px 11px;
@@ -251,9 +253,78 @@ textarea:focus-visible {
   line-height: 1.55;
 }
 
+.field select {
+  min-height: 39px;
+  padding: 0 11px;
+  border: 1px solid #e0e5ee;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  font-size: 12px;
+}
+
 .field input::placeholder,
 .field textarea::placeholder {
   color: #667085;
+}
+
+.ai-status {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.ai-field {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 8px;
+  min-width: 0;
+}
+
+.form-section > .ai-field {
+  margin: 18px 0 0 42px;
+}
+
+.ai-field .field {
+  grid-column: 1 / -1;
+}
+
+.ai-rewrite {
+  justify-self: start;
+}
+
+.ai-privacy-note {
+  margin: -3px 0 0;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.ai-suggestion {
+  padding: 12px;
+  border: 1px solid #dce1ec;
+  border-radius: 8px;
+  background: #f8f9ff;
+}
+
+.ai-suggestion-copy {
+  margin: 0;
+  color: #39445a;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.ai-suggestion-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.ai-suggestion-actions .button {
+  min-height: 32px;
 }
 
 .form-section > .field,
@@ -610,6 +681,137 @@ textarea:focus-visible {
   clip-path: inset(50%);
 }
 
+.directory {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 52px 5.5% 72px;
+}
+
+.directory-intro {
+  max-width: 700px;
+  margin-bottom: 30px;
+}
+
+.directory-intro h1 {
+  margin: 0;
+  font-size: clamp(27px, 4vw, 38px);
+  letter-spacing: -0.8px;
+}
+
+.directory-intro > p:last-child,
+.directory-disclaimer {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.directory-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(200px, 0.8fr);
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+}
+
+.directory-filters .field {
+  gap: 8px;
+}
+
+.directory-filters input,
+.directory-filters select {
+  min-height: 42px;
+}
+
+.role-result-count {
+  margin: 18px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.role-results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.role-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 5px 18px rgb(28 38 56 / 3%);
+}
+
+.role-card h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.role-category {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+}
+
+.role-overview {
+  margin: 8px 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.role-card details {
+  width: 100%;
+  margin: 0 0 16px;
+  color: #4c5870;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.role-card summary {
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.role-card details h3 {
+  margin: 12px 0 4px;
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.role-card details ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+}
+
+.role-card details p {
+  margin: 4px 0 0;
+}
+
+.role-link {
+  margin-top: auto;
+  color: white;
+  text-decoration: none;
+}
+
+.directory-disclaimer {
+  margin-top: 26px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--accent);
+  background: #f0f1ff;
+  font-size: 11px;
+}
+
 noscript {
   display: block;
   padding: 12px;
@@ -640,6 +842,8 @@ noscript {
 @media (max-width: 560px) {
   .topbar {
     min-height: 62px;
+    flex-wrap: wrap;
+    gap: 8px;
     padding: 0 16px;
   }
 
@@ -655,6 +859,12 @@ noscript {
 
   .topbar-actions {
     gap: 7px;
+  }
+
+  .topbar-actions .button {
+    min-height: 32px;
+    padding: 0 7px;
+    font-size: 9px;
   }
 
   .save-state {
@@ -673,6 +883,7 @@ noscript {
 
   .field-grid,
   .form-section > .field,
+  .form-section > .ai-field,
   .form-section > .entry-list {
     margin-left: 0;
   }
@@ -680,6 +891,15 @@ noscript {
   .resume-paper {
     min-height: 0;
     padding: 30px 24px;
+  }
+
+  .directory {
+    padding: 34px 17px 48px;
+  }
+
+  .directory-filters,
+  .role-results {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 

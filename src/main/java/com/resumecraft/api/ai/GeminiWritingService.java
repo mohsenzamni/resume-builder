@@ -1,14 +1,15 @@
 package com.resumecraft.api.ai;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.server.ResponseStatusException;
+import tools.jackson.databind.JsonNode;
 
 import java.time.Duration;
 import java.util.List;
@@ -30,10 +31,14 @@ public class GeminiWritingService {
     private final String model;
     private final boolean available;
 
+    @Autowired
     public GeminiWritingService(
-            RestClient.Builder restClientBuilder,
             @Value("${resumecraft.ai.gemini.api-key:}") String apiKey,
             @Value("${resumecraft.ai.gemini.model:gemini-2.5-flash}") String model) {
+        this(apiKey, model, "https://generativelanguage.googleapis.com/v1beta/");
+    }
+
+    GeminiWritingService(String apiKey, String model, String baseUrl) {
         this.available = apiKey != null && !apiKey.isBlank();
         if (model == null || !model.matches("[A-Za-z0-9._-]{1,100}")) {
             throw new IllegalArgumentException("Invalid Gemini model name");
@@ -42,11 +47,13 @@ public class GeminiWritingService {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(5));
         requestFactory.setReadTimeout(Duration.ofSeconds(30));
-        this.restClient = restClientBuilder
-                .baseUrl("https://generativelanguage.googleapis.com/v1beta")
-                .defaultHeader("x-goog-api-key", apiKey == null ? "" : apiKey)
-                .requestFactory(requestFactory)
-                .build();
+        RestClient.Builder restClientBuilder = RestClient.builder()
+                .baseUrl(baseUrl)
+                .requestFactory(requestFactory);
+        if (available) {
+            restClientBuilder.defaultHeader("x-goog-api-key", apiKey);
+        }
+        this.restClient = restClientBuilder.build();
     }
 
     public boolean isAvailable() {
@@ -69,7 +76,7 @@ public class GeminiWritingService {
 
         try {
             JsonNode response = restClient.post()
-                    .uri("/models/{model}:generateContent", model)
+                    .uri("models/{model}:generateContent", model)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(payload)
                     .retrieve()
@@ -91,7 +98,7 @@ public class GeminiWritingService {
                 }
             }
         } catch (RestClientException exception) {
-            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "AI provider request failed");
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "AI provider request failed", exception);
         }
 
         throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "AI provider returned no usable suggestion");

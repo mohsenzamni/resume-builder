@@ -4,6 +4,8 @@ A lightweight, English-language, left-to-right resume builder backed by a Spring
 
 The editor includes optional experience, education, projects, certifications, languages, and skills sections; each repeatable section supports editing, removal, reordering, live preview, and local draft saving. Choose the Classic or Modern layout and print on US Letter or A4 paper.
 
+The role directory currently contains 12 original, curated role guides with searchable prompts and example skills. They are starting points—not job-market research or requirements. You can export a local JSON backup or import a ResumeCraft JSON export.
+
 ## Run locally
 
 Requirements: Java 17+ and Maven.
@@ -17,10 +19,17 @@ Run `mvn spring-boot:run` (or `npm start`) from the project directory, then open
 - `src/test/java`: backend API tests.
 - The browser remains the source of truth for resume drafts. Resume contents are not sent to the backend; no database, account, or cross-origin setup is needed for the initial experience.
 - Add domain, application, and persistence layers when a validated feature—such as opt-in cloud sync—needs them. Keep resume-data handling explicit and access-controlled before introducing server-side storage.
-- Defer authentication, AI-provider integration, and payments until those product requirements are validated.
+- Resume drafts remain local. JSON export/import supports backups without introducing accounts or cloud storage.
+- Optional Gemini writing assistance sends only the selected summary or experience description and the professional title after the user confirms. Suggestions are never applied automatically; users must review them for accuracy.
+- AI is disabled unless `GEMINI_API_KEY` is configured on the server. The API key is never sent to the browser. The current in-memory request limit is per application process; production deployments should also configure provider quotas and edge-level rate limiting.
+- Defer accounts, cloud sync, and payments until those product requirements are validated. Role guidance and AI assistance remain product hypotheses until tested with users.
 
 Drafts, including the selected template, are saved in the current browser's local storage; clearing browser data removes them. Select **Download PDF**, choose US Letter or A4, and choose **Save as PDF** in the print dialog. Long entries flow across pages while individual resume entries are kept together when possible.
 
 ## Test
 
-Run `mvn test` for backend tests and `npm test` for draft normalization and DOM interaction tests.
+Run `mvn test` for backend tests and `npm test` for draft normalization, editor, import/export, AI interaction, and role-directory tests.
+
+### Optional AI setup
+
+Set `GEMINI_API_KEY` in the server environment to enable AI writing suggestions. `GEMINI_MODEL` can override the default model (`gemini-2.5-flash`). Without a key, the editor and role directory continue to work with AI controls disabled. When a user chooses an AI action, the selected text and professional title are sent to Google Gemini; other resume fields are not included. The user must confirm each request and review the returned suggestion before applying it.

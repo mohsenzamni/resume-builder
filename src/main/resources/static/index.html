@@ -20,6 +20,10 @@
         <span class="save-state" id="save-state" role="status" aria-live="polite">
           Saved on this device
         </span>
+        <a class="button button-quiet" href="./directory.html">Role guides</a>
+        <button class="button button-quiet" id="export-button" type="button">Export JSON</button>
+        <button class="button button-quiet" id="import-button" type="button">Import JSON</button>
+        <input id="import-file" type="file" accept="application/json,.json" hidden />
         <button class="button button-quiet" id="clear-button" type="button">
           Clear draft
         </button>
@@ -37,6 +41,9 @@
           <h1 id="editor-title">Build your resume</h1>
           <p class="intro-copy">
             Add your details and watch your resume take shape. Your draft stays in this browser.
+          </p>
+          <p class="ai-status" id="ai-status" role="status" aria-live="polite">
+            Optional AI writing suggestions are checking availability.
           </p>
         </div>
 
@@ -56,7 +63,7 @@
               </label>
               <label class="field field-wide">
                 <span>Professional title</span>
-                <input name="title" placeholder="e.g. Product Designer" />
+                <input name="title" maxlength="120" placeholder="e.g. Product Designer" />
               </label>
               <label class="field">
                 <span>Email</span>
@@ -85,15 +92,24 @@
                 <p>A short introduction to your experience</p>
               </div>
             </div>
-            <label class="field">
-              <span class="visually-hidden">Professional summary</span>
-              <textarea
-                name="summary"
-                rows="4"
-                maxlength="600"
-                placeholder="Describe your experience, strengths, and the value you bring."
-              ></textarea>
-            </label>
+            <div class="ai-field">
+              <label class="field">
+                <span class="visually-hidden">Professional summary</span>
+                <textarea
+                  name="summary"
+                  rows="4"
+                  maxlength="600"
+                  placeholder="Describe your experience, strengths, and the value you bring."
+                ></textarea>
+              </label>
+              <button class="button button-quiet ai-rewrite" data-ai-rewrite="summary" type="button" hidden>
+                ✨ Improve with AI
+              </button>
+              <p class="ai-privacy-note" hidden>
+                Only this text and your professional title are sent to Google Gemini after confirmation.
+              </p>
+              <div class="ai-suggestion" data-ai-suggestion="summary" hidden></div>
+            </div>
           </section>
 
           <section class="form-section" aria-labelledby="experience-heading">

@@ -11,19 +11,22 @@ const html = await readFile(new URL("../src/main/resources/static/index.html", i
 let dom;
 let importNumber = 0;
 
-async function openApp(draft = {}) {
+async function openApp(draft = {}, { url = "http://localhost/", fetch } = {}) {
   dom = new JSDOM(html, {
-    url: "http://localhost/",
+    url,
     runScripts: "outside-only",
     pretendToBeVisual: true,
   });
   dom.window.localStorage.setItem("resumecraft-draft-v1", JSON.stringify(draft));
   dom.window.confirm = () => true;
+  if (fetch) dom.window.fetch = fetch;
   globalThis.window = dom.window;
   globalThis.document = dom.window.document;
   globalThis.localStorage = dom.window.localStorage;
   await import(`${appPath}?test=${++importNumber}`);
 }
+
+const nextTask = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 afterEach(() => {
   dom?.window.close();
@@ -278,4 +281,96 @@ test("paper size selector configures letter or A4 print dimensions", async () =>
   selector.value = "letter";
   selector.dispatchEvent(new window.Event("change", { bubbles: true }));
   assert.match(document.querySelector("#print-page-style").textContent, /size:\s*letter/);
+});
+
+test("role directory links can prefill a title without replacing an existing title", async () => {
+  await openApp({}, { url: "http://localhost/?role=software-engineer" });
+  assert.equal(document.querySelector('[name="title"]').value, "Software Engineer");
+  window.dispatchEvent(new window.Event("pagehide"));
+  assert.equal(JSON.parse(localStorage.getItem("resumecraft-draft-v1")).title, "Software Engineer");
+
+  await openApp({ title: "My saved title" }, { url: "http://localhost/?role=software-engineer" });
+  assert.equal(document.querySelector('[name="title"]').value, "My saved title");
+});
+
+test("AI suggestions are reviewed before applying and only selected text is sent", async () => {
+  const requests = [];
+  await openApp(
+    { name: "Private Name", title: "Product Designer", summary: "Designed mobile workflows." },
+    {
+      fetch: async (url, options = {}) => {
+        requests.push({ url, options });
+        return url.endsWith("/status")
+          ? { ok: true, json: async () => ({ available: true }) }
+          : {
+              ok: true,
+              json: async () => ({ suggestion: "Improved mobile workflows." }),
+            };
+      },
+    },
+  );
+  await nextTask();
+  const button = document.querySelector('[data-ai-rewrite="summary"]');
+  assert.equal(button.hidden, false);
+  button.click();
+  await nextTask();
+
+  const rewrite = requests.find(({ url }) => url.endsWith("/rewrite"));
+  const requestBody = JSON.parse(rewrite.options.body);
+  assert.deepEqual(requestBody, {
+    kind: "SUMMARY",
+    text: "Designed mobile workflows.",
+    role: "Product Designer",
+  });
+  assert.equal(JSON.stringify(requestBody).includes("Private Name"), false);
+  assert.equal(document.querySelector('[name="summary"]').value, "Designed mobile workflows.");
+  assert.equal(document.querySelector('[data-ai-suggestion="summary"]').hidden, false);
+
+  document.querySelector('[data-ai-suggestion="summary"] .button-primary').click();
+  assert.equal(document.querySelector('[name="summary"]').value, "Improved mobile workflows.");
+  assert.match(document.querySelector('[data-preview="summary"]').textContent, /Improved mobile workflows/);
+});
+
+test("JSON resume imports are normalized and replace only after confirmation", async () => {
+  await openApp({ name: "Old resume" });
+  const fileInput = document.querySelector("#import-file");
+  Object.defineProperty(fileInput, "files", {
+    configurable: true,
+    value: [{
+      size: 100,
+      text: async () => JSON.stringify({
+        format: "ResumeCraft",
+        version: 1,
+        resume: { name: "Imported resume", unknown: "ignored" },
+      }),
+    }],
+  });
+  fileInput.dispatchEvent(new window.Event("change", { bubbles: true }));
+  await nextTask();
+
+  assert.equal(document.querySelector('[data-preview="name"]').textContent, "Imported resume");
+  const saved = JSON.parse(localStorage.getItem("resumecraft-draft-v1"));
+  assert.equal(saved.name, "Imported resume");
+  assert.equal(Object.hasOwn(saved, "unknown"), false);
+  assert.equal(document.querySelector("#save-state").textContent, "Imported and saved on this device");
+});
+
+test("JSON resume export creates a named local file", async () => {
+  await openApp({ name: "Exportable resume" });
+  let exportedBlob;
+  let clickedDownload;
+  window.URL.createObjectURL = (blob) => {
+    exportedBlob = blob;
+    return "blob:resume";
+  };
+  window.URL.revokeObjectURL = () => {};
+  window.HTMLAnchorElement.prototype.click = function click() {
+    clickedDownload = { href: this.href, download: this.download };
+  };
+
+  document.querySelector("#export-button").click();
+
+  assert.equal(exportedBlob.type, "application/json");
+  assert.equal(clickedDownload.href, "blob:resume");
+  assert.equal(clickedDownload.download, "resumecraft-resume.json");
 });
