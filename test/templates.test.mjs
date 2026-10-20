@@ -116,6 +116,8 @@ test("preview uses the saved resume and switches templates without changing the 
   assert.equal(dialog.open, true);
   assert.equal(dialog.querySelector("#template-dialog-preview [data-preview='name']").textContent, "Actual Resume");
   assert.equal(dialog.querySelector("#template-dialog-preview .resume-paper").dataset.template, "classic");
+  const ids = [...document.querySelectorAll("[id]")].map((element) => element.id);
+  assert.equal(new Set(ids).size, ids.length);
 
   const select = document.querySelector("#template-dialog-select");
   select.value = "executive";
