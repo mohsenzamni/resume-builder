@@ -2,7 +2,7 @@
 
 A lightweight, English-language, left-to-right resume builder backed by a Spring Boot application. Edit your details with a live preview, save a draft locally in your browser, and use your browser's print dialog to save a PDF.
 
-The editor includes optional experience, education, projects, certifications, languages, and skills sections; each repeatable section supports editing, removal, reordering, live preview, and local draft saving. Choose the Classic or Modern layout and print on US Letter or A4 paper.
+The editor includes optional experience, education, projects, certifications, languages, and skills sections; each repeatable section supports editing, removal, reordering, live preview, and local draft saving. Choose from five original layouts—Classic, Modern, Minimal, Executive, and Compact—and print on US Letter or A4 paper. An on-device quality checklist offers general reminders without scoring a resume or making hiring predictions.
 
 The role directory currently contains 12 original, curated role guides with searchable prompts and example skills. They are starting points—not job-market research or requirements. You can export a local JSON backup or import a ResumeCraft JSON export.
 

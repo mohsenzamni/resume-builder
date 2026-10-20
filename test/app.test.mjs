@@ -271,6 +271,46 @@ test("template selection updates the preview and persists locally", async () => 
   assert.equal(document.querySelector("#resume-preview").dataset.template, "modern");
 });
 
+test("all original templates are selectable and preserved in the local draft", async () => {
+  await openApp();
+  const selector = document.querySelector("#template-select");
+  const templates = [...selector.options].map((option) => option.value);
+
+  assert.deepEqual(templates, ["classic", "modern", "minimal", "executive", "compact"]);
+  for (const template of templates) {
+    selector.value = template;
+    selector.dispatchEvent(new window.Event("change", { bubbles: true }));
+    assert.equal(document.querySelector("#resume-preview").dataset.template, template);
+  }
+  window.dispatchEvent(new window.Event("pagehide"));
+  assert.equal(JSON.parse(localStorage.getItem("resumecraft-draft-v1")).template, "compact");
+});
+
+test("quality reminders update locally and avoid a resume score", async () => {
+  await openApp();
+  const progress = document.querySelector("#quality-check-progress");
+  assert.equal(progress.textContent, "0 of 4 reminders addressed");
+  assert.match(document.querySelector(".quality-check").textContent, /not a score/i);
+
+  const fields = [
+    ["name", "Jordan Lee"],
+    ["title", "Product Designer"],
+    ["email", "jordan@example.com"],
+    ["summary", "Designer focused on accessible products."],
+    ["skills", "Accessibility, Prototyping"],
+  ];
+  for (const [name, value] of fields) {
+    const field = document.querySelector(`[name="${name}"]`);
+    field.value = value;
+    field.dispatchEvent(new window.Event("input", { bubbles: true }));
+  }
+  window.dispatchEvent(new window.Event("pagehide"));
+
+  assert.equal(progress.textContent, "4 of 4 reminders addressed");
+  assert.equal(document.querySelectorAll("#quality-check-list .quality-check-complete").length, 4);
+  assert.equal(JSON.parse(localStorage.getItem("resumecraft-draft-v1")).name, "Jordan Lee");
+});
+
 test("paper size selector configures letter or A4 print dimensions", async () => {
   await openApp();
   const selector = document.querySelector("#paper-size-select");

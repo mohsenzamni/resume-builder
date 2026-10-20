@@ -10,6 +10,7 @@ import {
   normalizeResume,
   safeWebsiteUrl,
   STORAGE_KEY,
+  TEMPLATES,
   websiteDisplayText,
 } from "../src/main/resources/static/resume-data.js";
 
@@ -159,6 +160,8 @@ test("entry fields are restricted to the shared schema", () => {
 });
 
 test("template preferences normalize to supported templates", () => {
+  assert.deepEqual(TEMPLATES, ["classic", "modern", "minimal", "executive", "compact"]);
   assert.equal(normalizeResume({ template: "modern" }).template, "modern");
+  assert.equal(normalizeResume({ template: "executive" }).template, "executive");
   assert.equal(normalizeResume({ template: "unknown" }).template, "classic");
 });

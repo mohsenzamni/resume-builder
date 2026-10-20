@@ -217,7 +217,7 @@ function renderPreview() {
   renderQualityCheck(skills);
 }
 
-function renderQualityCheck(skills = resume.skills.split(/[,\n]/).map((skill) => skill.trim()).filter(Boolean)) {
+function renderQualityCheck(skills) {
   const hasEntryContent = ["experience", "education", "projects", "certifications", "languages"]
     .some((type) => resume[type].some((entry) => Object.values(entry).some((value) => value.trim())));
   const checks = [

@@ -1094,7 +1094,10 @@ noscript {
     font-size: 24pt;
   }
 
-  .resume-paper[data-template="modern"] {
+  .resume-paper[data-template="modern"],
+  .resume-paper[data-template="minimal"],
+  .resume-paper[data-template="executive"],
+  .resume-paper[data-template="compact"] {
     padding: 0;
   }
 
