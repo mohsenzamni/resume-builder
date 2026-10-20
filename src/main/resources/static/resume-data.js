@@ -9,27 +9,45 @@ const initialResume = {
   website: "",
   summary: "",
   skills: "",
+  template: "classic",
   experience: [],
   education: [],
+  projects: [],
+  certifications: [],
+  languages: [],
 };
 
 const textFields = Object.keys(initialResume).filter((field) => typeof initialResume[field] === "string");
-export const ENTRY_FIELDS = ["role", "organization", "start", "end", "description"];
-export const ENTRY_TYPES = ["experience", "education"];
+export const ENTRY_FIELDS = {
+  experience: ["role", "organization", "start", "end", "description"],
+  education: ["role", "organization", "start", "end", "description"],
+  projects: ["role", "organization", "start", "end", "description"],
+  certifications: ["role", "organization", "start", "end", "description"],
+  languages: ["role", "proficiency"],
+};
+export const ENTRY_TYPES = Object.keys(ENTRY_FIELDS);
+export const TEMPLATES = ["classic", "modern"];
 
 export function createInitialResume() {
-  return { ...initialResume, experience: [], education: [] };
+  return {
+    ...initialResume,
+    ...Object.fromEntries(ENTRY_TYPES.map((type) => [type, []])),
+  };
 }
 
 export function createEntry() {
-  return Object.fromEntries(ENTRY_FIELDS.map((field) => [field, ""]));
+  return createEntryFor("experience");
 }
 
-function normalizeEntries(entries) {
+export function createEntryFor(type) {
+  return Object.fromEntries((ENTRY_FIELDS[type] ?? []).map((field) => [field, ""]));
+}
+
+function normalizeEntries(entries, type) {
   return entries.map((entry) => {
     const source = entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
     return Object.fromEntries(
-      ENTRY_FIELDS.map((field) => [
+      ENTRY_FIELDS[type].map((field) => [
         field,
         typeof source[field] === "string" ? source[field] : "",
       ]),
@@ -68,8 +86,13 @@ export function normalizeResume(saved) {
         typeof source[field] === "string" ? source[field] : initialResume[field],
       ]),
     ),
-    experience: Array.isArray(source.experience) ? normalizeEntries(source.experience) : [],
-    education: Array.isArray(source.education) ? normalizeEntries(source.education) : [],
+    template: TEMPLATES.includes(source.template) ? source.template : initialResume.template,
+    ...Object.fromEntries(
+      ENTRY_TYPES.map((type) => [
+        type,
+        Array.isArray(source[type]) ? normalizeEntries(source[type], type) : [],
+      ]),
+    ),
   };
 }
 

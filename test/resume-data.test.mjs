@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   createEntry,
   createInitialResume,
+  createEntryFor,
   ENTRY_FIELDS,
   ENTRY_TYPES,
   loadResume,
@@ -37,17 +38,29 @@ test("non-string fields fall back to empty strings", () => {
   assert.equal(resume.title, "Product Designer");
 });
 
-test("non-array experience and education values become empty arrays", () => {
-  const resume = normalizeResume({ experience: {}, education: "school" });
+test("non-array optional sections become empty arrays", () => {
+  const resume = normalizeResume({
+    experience: {},
+    education: "school",
+    projects: null,
+    certifications: false,
+    languages: "English",
+  });
 
   assert.deepEqual(resume.experience, []);
   assert.deepEqual(resume.education, []);
+  assert.deepEqual(resume.projects, []);
+  assert.deepEqual(resume.certifications, []);
+  assert.deepEqual(resume.languages, []);
 });
 
 test("malformed entries are normalized to the supported string fields", () => {
   const resume = normalizeResume({
     experience: [null, "unexpected", { role: 5, organization: "Example Co.", start: null }],
     education: [{ role: "B.A.", unknown: "ignored" }],
+    projects: [{ role: "Portfolio", organization: "Client", description: "Built it" }],
+    certifications: [{ role: "Cloud Certificate", start: "2025" }],
+    languages: [{ role: "English", proficiency: "Fluent", start: "ignored" }],
   });
 
   assert.deepEqual(resume.experience, [
@@ -58,6 +71,13 @@ test("malformed entries are normalized to the supported string fields", () => {
   assert.deepEqual(resume.education, [
     { role: "B.A.", organization: "", start: "", end: "", description: "" },
   ]);
+  assert.deepEqual(resume.projects, [
+    { role: "Portfolio", organization: "Client", start: "", end: "", description: "Built it" },
+  ]);
+  assert.deepEqual(resume.certifications, [
+    { role: "Cloud Certificate", organization: "", start: "2025", end: "", description: "" },
+  ]);
+  assert.deepEqual(resume.languages, [{ role: "English", proficiency: "Fluent" }]);
 });
 
 test("new entries use the same schema as normalized entries", () => {
@@ -68,6 +88,16 @@ test("new entries use the same schema as normalized entries", () => {
     end: "",
     description: "",
   });
+  assert.deepEqual(createEntryFor("languages"), { role: "", proficiency: "" });
+});
+
+test("initial drafts get independent arrays for every entry section", () => {
+  const first = createInitialResume();
+  const second = createInitialResume();
+  first.projects.push(createEntryFor("projects"));
+  assert.equal(second.projects.length, 0);
+  assert.equal(second.certifications.length, 0);
+  assert.equal(second.languages.length, 0);
 });
 
 test("draft loading reads the ResumeCraft storage key", () => {
@@ -111,6 +141,24 @@ test("website display text is derived from the validated URL", () => {
 });
 
 test("entry fields are restricted to the shared schema", () => {
-  assert.deepEqual(ENTRY_FIELDS, ["role", "organization", "start", "end", "description"]);
-  assert.deepEqual(ENTRY_TYPES, ["experience", "education"]);
+  assert.deepEqual(ENTRY_FIELDS.experience, [
+    "role",
+    "organization",
+    "start",
+    "end",
+    "description",
+  ]);
+  assert.deepEqual(ENTRY_FIELDS.languages, ["role", "proficiency"]);
+  assert.deepEqual(ENTRY_TYPES, [
+    "experience",
+    "education",
+    "projects",
+    "certifications",
+    "languages",
+  ]);
+});
+
+test("template preferences normalize to supported templates", () => {
+  assert.equal(normalizeResume({ template: "modern" }).template, "modern");
+  assert.equal(normalizeResume({ template: "unknown" }).template, "classic");
 });

@@ -1,16 +1,68 @@
 import {
-  createEntry,
+  createEntryFor,
   createInitialResume,
   ENTRY_FIELDS,
   ENTRY_TYPES,
   loadResume,
   safeWebsiteUrl,
   STORAGE_KEY,
+  TEMPLATES,
   websiteDisplayText,
 } from "./resume-data.js";
 
+const sectionConfig = {
+  experience: {
+    label: "POSITION",
+    fields: [
+      ["role", "Job title", "e.g. Marketing Manager", true],
+      ["organization", "Company", "Company name", true],
+      ["start", "Start date", "Month, year"],
+      ["end", "End date", "Present or month, year"],
+      ["description", "Highlights", "Key contributions and outcomes", true, "textarea"],
+    ],
+  },
+  education: {
+    label: "EDUCATION",
+    fields: [
+      ["role", "Degree or qualification", "e.g. B.A. in Economics", true],
+      ["organization", "School", "School name", true],
+      ["start", "Start date", "Month, year"],
+      ["end", "End date", "Month, year"],
+      ["description", "Details", "Relevant coursework or honors", true, "textarea"],
+    ],
+  },
+  projects: {
+    label: "PROJECT",
+    fields: [
+      ["role", "Project name", "e.g. Community garden app", true],
+      ["organization", "Client or organization", "Optional", true],
+      ["start", "Start date", "Month, year"],
+      ["end", "End date", "Month, year"],
+      ["description", "Project details", "What you built and the impact", true, "textarea"],
+    ],
+  },
+  certifications: {
+    label: "CERTIFICATION",
+    fields: [
+      ["role", "Certification", "e.g. AWS Certified Solutions Architect", true],
+      ["organization", "Issuing organization", "e.g. Amazon Web Services", true],
+      ["start", "Date earned", "Month, year"],
+      ["description", "Details", "Optional credential details", true, "textarea"],
+    ],
+  },
+  languages: {
+    label: "LANGUAGE",
+    fields: [
+      ["role", "Language", "e.g. English", true],
+      ["proficiency", "Proficiency", "e.g. Native, fluent, conversational", true],
+    ],
+  },
+};
+
 const form = document.querySelector("#resume-form");
 const saveState = document.querySelector("#save-state");
+const templateSelect = document.querySelector("#template-select");
+const paperSizeSelect = document.querySelector("#paper-size-select");
 let saveTimer;
 let resume = loadResume();
 
@@ -43,46 +95,43 @@ function renderEntryForm(type) {
 
   list.innerHTML = entries
     .map(
-      (entry, index) => `
+      (entry, index) => {
+        const fields = sectionConfig[type].fields
+          .map(([key, label, placeholder, wide, elementType]) => {
+            const control =
+              elementType === "textarea"
+                ? `<textarea data-entry="${type}" data-index="${index}" data-key="${key}" rows="2" placeholder="${placeholder}">${escapeHtml(entry[key])}</textarea>`
+                : `<input data-entry="${type}" data-index="${index}" data-key="${key}" value="${escapeHtml(entry[key])}" placeholder="${placeholder}" />`;
+            return `
+              <label class="field${wide ? " field-wide" : ""}">
+                <span>${label}</span>
+                ${control}
+              </label>`;
+          })
+          .join("");
+
+        return `
         <article class="entry-card">
           <div class="entry-card-header">
-            <span>${type === "experience" ? "POSITION" : "EDUCATION"} ${index + 1}</span>
+            <span>${sectionConfig[type].label} ${index + 1}</span>
             <div class="entry-actions">
               <button class="reorder-entry" data-move="${type}" data-index="${index}" data-direction="up" type="button" aria-label="Move ${type} entry ${index + 1} up" ${index === 0 ? "disabled" : ""}>↑</button>
               <button class="reorder-entry" data-move="${type}" data-index="${index}" data-direction="down" type="button" aria-label="Move ${type} entry ${index + 1} down" ${index === entries.length - 1 ? "disabled" : ""}>↓</button>
               <button class="remove-entry" data-remove="${type}" data-index="${index}" type="button" aria-label="Remove ${type} entry ${index + 1}">Remove</button>
             </div>
           </div>
-          <div class="entry-fields">
-            <label class="field field-wide">
-              <span>${type === "experience" ? "Job title" : "Degree or qualification"}</span>
-              <input data-entry="${type}" data-index="${index}" data-key="role" value="${escapeHtml(entry.role)}" placeholder="${type === "experience" ? "e.g. Marketing Manager" : "e.g. B.A. in Economics"}" />
-            </label>
-            <label class="field field-wide">
-              <span>${type === "experience" ? "Company" : "School"}</span>
-              <input data-entry="${type}" data-index="${index}" data-key="organization" value="${escapeHtml(entry.organization)}" placeholder="${type === "experience" ? "Company name" : "School name"}" />
-            </label>
-            <label class="field">
-              <span>Start date</span>
-              <input data-entry="${type}" data-index="${index}" data-key="start" value="${escapeHtml(entry.start)}" placeholder="Month, year" />
-            </label>
-            <label class="field">
-              <span>End date</span>
-              <input data-entry="${type}" data-index="${index}" data-key="end" value="${escapeHtml(entry.end)}" placeholder="Present or month, year" />
-            </label>
-            <label class="field field-wide">
-              <span>${type === "experience" ? "Highlights" : "Details"} <span class="optional-label">(optional)</span></span>
-              <textarea data-entry="${type}" data-index="${index}" data-key="description" rows="2" placeholder="${type === "experience" ? "Key contributions and outcomes" : "Relevant coursework or honors"}">${escapeHtml(entry.description)}</textarea>
-            </label>
-          </div>
-        </article>`,
+          <div class="entry-fields">${fields}</div>
+        </article>`;
+      },
     )
     .join("");
 }
 
 function renderEntriesPreview(type) {
   const container = document.querySelector(`#${type}-preview`);
-  const entries = resume[type].filter((entry) => entry.role || entry.organization || entry.description);
+  const entries = resume[type].filter((entry) =>
+    ENTRY_FIELDS[type].some((field) => entry[field]),
+  );
   const section = document.querySelector(`#${type}-preview-section`);
   section.hidden = entries.length === 0;
 
@@ -96,6 +145,7 @@ function renderEntriesPreview(type) {
             ${dateRange ? `<span class="resume-entry-dates">${escapeHtml(dateRange)}</span>` : ""}
           </div>
           ${entry.role && entry.organization ? `<p class="resume-entry-subtitle">${escapeHtml(entry.organization)}</p>` : ""}
+          ${entry.proficiency ? `<p class="resume-entry-subtitle">${escapeHtml(entry.proficiency)}</p>` : ""}
           ${entry.description ? `<p class="resume-entry-description">${escapeHtml(entry.description)}</p>` : ""}
         </article>`;
     })
@@ -105,6 +155,7 @@ function renderEntriesPreview(type) {
 function renderPreview() {
   setText('[data-preview="name"]', resume.name, "Your Name");
   setText('[data-preview="title"]', resume.title, "Professional Title");
+  document.querySelector("#resume-preview").dataset.template = resume.template;
   setText('[data-preview="email"]', resume.email);
   setText('[data-preview="phone"]', resume.phone);
   setText('[data-preview="location"]', resume.location);
@@ -123,8 +174,7 @@ function renderPreview() {
   summarySection.hidden = !resume.summary.trim();
   setText('[data-preview="summary"]', resume.summary);
 
-  renderEntriesPreview("experience");
-  renderEntriesPreview("education");
+  ENTRY_TYPES.forEach(renderEntriesPreview);
 
   const skills = resume.skills
     .split(/[,\n]/)
@@ -142,8 +192,8 @@ function populateForm() {
     const field = form.elements.namedItem(key);
     if (field && typeof value === "string") field.value = value;
   }
-  renderEntryForm("experience");
-  renderEntryForm("education");
+  ENTRY_TYPES.forEach(renderEntryForm);
+  templateSelect.value = resume.template;
 }
 
 function persistDraft() {
@@ -177,11 +227,11 @@ form.addEventListener("input", (event) => {
     const { entry, index, key } = target.dataset;
     const entryIndex = Number(index);
     if (
-      !["experience", "education"].includes(entry) ||
+      !ENTRY_TYPES.includes(entry) ||
       !Number.isInteger(entryIndex) ||
       entryIndex < 0 ||
       entryIndex >= resume[entry].length ||
-      !ENTRY_FIELDS.includes(key)
+      !ENTRY_FIELDS[entry].includes(key)
     ) {
       return;
     }
@@ -199,7 +249,7 @@ document.addEventListener("click", (event) => {
   if (addButton) {
     const type = addButton.dataset.add;
     if (!ENTRY_TYPES.includes(type)) return;
-    resume[type].push(createEntry());
+    resume[type].push(createEntryFor(type));
     renderEntryForm(type);
     renderPreview();
     saveDraft();
@@ -267,6 +317,27 @@ document.addEventListener("click", (event) => {
 
 document.querySelector("#print-button").addEventListener("click", () => {
   window.print();
+});
+
+templateSelect.addEventListener("change", () => {
+  if (!TEMPLATES.includes(templateSelect.value)) {
+    templateSelect.value = resume.template;
+    return;
+  }
+  resume.template = templateSelect.value;
+  renderPreview();
+  saveDraft();
+});
+
+paperSizeSelect.addEventListener("change", () => {
+  const sizes = { letter: "letter", a4: "A4" };
+  const size = sizes[paperSizeSelect.value];
+  if (!size) {
+    paperSizeSelect.value = "letter";
+    return;
+  }
+  document.querySelector("#print-page-style").textContent =
+    `@page { size: ${size}; margin: 0.55in; }`;
 });
 
 document.querySelector("#clear-button").addEventListener("click", () => {

@@ -128,9 +128,57 @@
             <div class="entry-list" id="education-list"></div>
           </section>
 
+          <section class="form-section" aria-labelledby="projects-heading">
+            <div class="section-heading section-heading-with-action">
+              <div class="section-heading">
+                <span class="section-number">05</span>
+                <div>
+                  <h2 id="projects-heading">Projects</h2>
+                  <p>Selected work and personal projects</p>
+                </div>
+              </div>
+              <button class="button button-add" data-add="projects" type="button">
+                <span aria-hidden="true">+</span> Add
+              </button>
+            </div>
+            <div class="entry-list" id="projects-list"></div>
+          </section>
+
+          <section class="form-section" aria-labelledby="certifications-heading">
+            <div class="section-heading section-heading-with-action">
+              <div class="section-heading">
+                <span class="section-number">06</span>
+                <div>
+                  <h2 id="certifications-heading">Certifications</h2>
+                  <p>Credentials relevant to your work</p>
+                </div>
+              </div>
+              <button class="button button-add" data-add="certifications" type="button">
+                <span aria-hidden="true">+</span> Add
+              </button>
+            </div>
+            <div class="entry-list" id="certifications-list"></div>
+          </section>
+
+          <section class="form-section" aria-labelledby="languages-heading">
+            <div class="section-heading section-heading-with-action">
+              <div class="section-heading">
+                <span class="section-number">07</span>
+                <div>
+                  <h2 id="languages-heading">Languages</h2>
+                  <p>Languages and your proficiency</p>
+                </div>
+              </div>
+              <button class="button button-add" data-add="languages" type="button">
+                <span aria-hidden="true">+</span> Add
+              </button>
+            </div>
+            <div class="entry-list" id="languages-list"></div>
+          </section>
+
           <section class="form-section" aria-labelledby="skills-heading">
             <div class="section-heading">
-              <span class="section-number">05</span>
+              <span class="section-number">08</span>
               <div>
                 <h2 id="skills-heading">Skills</h2>
                 <p>Separate each skill with a comma</p>
@@ -159,9 +207,24 @@
             <p class="eyebrow">LIVE PREVIEW</p>
             <h2 id="preview-heading">Your resume</h2>
           </div>
-          <span class="page-indicator">US Letter · Auto pagination</span>
+          <div class="preview-options">
+            <label class="preview-select">
+              <span class="visually-hidden">Resume template</span>
+              <select id="template-select" aria-label="Resume template">
+                <option value="classic">Classic</option>
+                <option value="modern">Modern</option>
+              </select>
+            </label>
+            <label class="preview-select">
+              <span class="visually-hidden">PDF paper size</span>
+              <select id="paper-size-select" aria-label="PDF paper size">
+                <option value="letter">US Letter</option>
+                <option value="a4">A4</option>
+              </select>
+            </label>
+          </div>
         </div>
-        <article class="resume-paper" id="resume-preview" aria-label="Resume preview">
+        <article class="resume-paper" id="resume-preview" data-template="classic" aria-label="Resume preview">
           <header class="resume-header">
             <h1 data-preview="name">Your Name</h1>
             <p class="resume-title" data-preview="title">Professional Title</p>
@@ -184,6 +247,18 @@
             <h2>Education</h2>
             <div id="education-preview"></div>
           </section>
+          <section class="resume-section" id="projects-preview-section">
+            <h2>Projects</h2>
+            <div id="projects-preview"></div>
+          </section>
+          <section class="resume-section" id="certifications-preview-section">
+            <h2>Certifications</h2>
+            <div id="certifications-preview"></div>
+          </section>
+          <section class="resume-section" id="languages-preview-section">
+            <h2>Languages</h2>
+            <div id="languages-preview"></div>
+          </section>
           <section class="resume-section" id="skills-preview-section">
             <h2>Skills</h2>
             <p class="skills-preview" id="skills-preview"></p>
@@ -192,6 +267,7 @@
       </section>
     </main>
     <noscript>This resume builder needs JavaScript enabled to edit and preview your resume.</noscript>
+    <style id="print-page-style">@page { size: letter; margin: 0.55in; }</style>
     <script src="./app.js" type="module"></script>
   </body>
 </html>

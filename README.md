@@ -2,6 +2,8 @@
 
 A lightweight, English-language, left-to-right resume builder backed by a Spring Boot application. Edit your details with a live preview, save a draft locally in your browser, and use your browser's print dialog to save a PDF.
 
+The editor includes optional experience, education, projects, certifications, languages, and skills sections; each repeatable section supports editing, removal, reordering, live preview, and local draft saving. Choose the Classic or Modern layout and print on US Letter or A4 paper.
+
 ## Run locally
 
 Requirements: Java 17+ and Maven.
@@ -17,7 +19,7 @@ Run `mvn spring-boot:run` (or `npm start`) from the project directory, then open
 - Add domain, application, and persistence layers when a validated feature—such as opt-in cloud sync—needs them. Keep resume-data handling explicit and access-controlled before introducing server-side storage.
 - Defer authentication, AI-provider integration, and payments until those product requirements are validated.
 
-Drafts are saved in the current browser's local storage; clearing browser data removes them. Select **Download PDF** and choose **Save as PDF** in the print dialog.
+Drafts, including the selected template, are saved in the current browser's local storage; clearing browser data removes them. Select **Download PDF**, choose US Letter or A4, and choose **Save as PDF** in the print dialog. Long entries flow across pages while individual resume entries are kept together when possible.
 
 ## Test
 

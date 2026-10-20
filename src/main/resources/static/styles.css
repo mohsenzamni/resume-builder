@@ -390,6 +390,7 @@ textarea:focus-visible {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
+  gap: 12px;
   margin: 0 0 16px;
 }
 
@@ -401,16 +402,31 @@ textarea:focus-visible {
   font-size: 17px;
 }
 
-.page-indicator {
-  padding: 6px 9px;
+.preview-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.preview-select select {
+  min-height: 34px;
+  padding: 0 26px 0 9px;
   border: 1px solid var(--line);
-  border-radius: 6px;
+  border-radius: 7px;
   background: #fff;
-  color: #667085;
+  color: #566076;
+  font: inherit;
   font-size: 10px;
 }
 
+.preview-select select:focus-visible {
+  outline: 3px solid rgb(81 91 207 / 24%);
+  outline-offset: 2px;
+}
+
 .resume-paper {
+  --resume-accent: #515bcf;
   min-height: 710px;
   padding: clamp(30px, 4.4vw, 58px);
   background: white;
@@ -424,7 +440,7 @@ textarea:focus-visible {
 
 .resume-header {
   padding-bottom: 19px;
-  border-bottom: 2px solid var(--accent);
+  border-bottom: 2px solid var(--resume-accent);
 }
 
 .resume-header h1 {
@@ -439,7 +455,7 @@ textarea:focus-visible {
 
 .resume-title {
   margin: 5px 0 11px;
-  color: var(--accent);
+  color: var(--resume-accent);
   font-size: 13px;
   font-weight: 700;
 }
@@ -522,7 +538,7 @@ textarea:focus-visible {
 
 .resume-section .resume-entry-subtitle {
   margin-top: 1px;
-  color: var(--accent);
+  color: var(--resume-accent);
   font-size: 10px;
   font-weight: 600;
 }
@@ -543,8 +559,44 @@ textarea:focus-visible {
   padding: 4px 8px;
   border-radius: 5px;
   background: #f0f1ff;
-  color: #4b54bf;
+  color: var(--resume-accent);
   font-size: 9px;
+}
+
+.resume-paper[data-template="modern"] {
+  --resume-accent: #166b65;
+  padding: clamp(34px, 5vw, 64px);
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.resume-paper[data-template="modern"] .resume-header {
+  padding: 0 0 20px 18px;
+  border-bottom: 0;
+  border-left: 4px solid var(--resume-accent);
+}
+
+.resume-paper[data-template="modern"] .resume-header h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: 0;
+}
+
+.resume-paper[data-template="modern"] .resume-title {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 500;
+}
+
+.resume-paper[data-template="modern"] .resume-section {
+  margin-top: 17px;
+}
+
+.resume-paper[data-template="modern"] .resume-section h2 {
+  padding-bottom: 4px;
+  border-bottom: 1px solid #dce8e5;
+  color: var(--resume-accent);
+}
+
+.resume-paper[data-template="modern"] .resume-entry-heading strong {
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .visually-hidden {
@@ -673,6 +725,10 @@ noscript {
 
   .resume-header h1 {
     font-size: 24pt;
+  }
+
+  .resume-paper[data-template="modern"] {
+    padding: 0;
   }
 
   .resume-section h2 {

@@ -176,3 +176,106 @@ test("reordering controls are disabled at the ends and cannot move past a bounda
     ["B.A.", "M.A."],
   );
 });
+
+test("projects can be created, edited, reordered, removed, previewed, and saved", async () => {
+  await openApp();
+
+  document.querySelector('[data-add="projects"]').click();
+  const project = document.querySelector("#projects-list .entry-card");
+  const fields = {
+    role: "Open Source Portfolio",
+    organization: "Personal",
+    start: "2024",
+    end: "Present",
+    description: "Built a searchable portfolio for independent designers.",
+  };
+  for (const [key, value] of Object.entries(fields)) {
+    const input = project.querySelector(`[data-key="${key}"]`);
+    input.value = value;
+    input.dispatchEvent(new window.Event("input", { bubbles: true }));
+  }
+
+  document.querySelector('[data-add="projects"]').click();
+  const second = document.querySelectorAll("#projects-list .entry-card")[1];
+  second.querySelector('[data-key="role"]').value = "Research Library";
+  second.querySelector('[data-key="role"]').dispatchEvent(
+    new window.Event("input", { bubbles: true }),
+  );
+  document.querySelector('[data-move="projects"][data-index="1"][data-direction="up"]').click();
+  window.dispatchEvent(new window.Event("pagehide"));
+
+  const titles = [...document.querySelectorAll("#projects-preview .resume-entry strong")].map(
+    (entry) => entry.textContent,
+  );
+  assert.deepEqual(titles, ["Research Library", "Open Source Portfolio"]);
+  assert.match(document.querySelector("#projects-preview").textContent, /searchable portfolio/);
+  assert.deepEqual(
+    JSON.parse(localStorage.getItem("resumecraft-draft-v1")).projects.map((entry) => entry.role),
+    titles,
+  );
+
+  document.querySelector('[data-remove="projects"][data-index="0"]').click();
+  assert.equal(document.querySelectorAll("#projects-list .entry-card").length, 1);
+  assert.doesNotMatch(document.querySelector("#projects-preview").textContent, /Research Library/);
+});
+
+test("certifications and languages are optional, editable sections", async () => {
+  await openApp();
+
+  assert.equal(document.querySelector("#certifications-preview-section").hidden, true);
+  assert.equal(document.querySelector("#languages-preview-section").hidden, true);
+
+  document.querySelector('[data-add="certifications"]').click();
+  const certification = document.querySelector("#certifications-list .entry-card");
+  certification.querySelector('[data-key="role"]').value = "Cloud Practitioner";
+  certification.querySelector('[data-key="role"]').dispatchEvent(
+    new window.Event("input", { bubbles: true }),
+  );
+  certification.querySelector('[data-key="organization"]').value = "Example Academy";
+  certification.querySelector('[data-key="organization"]').dispatchEvent(
+    new window.Event("input", { bubbles: true }),
+  );
+
+  document.querySelector('[data-add="languages"]').click();
+  const language = document.querySelector("#languages-list .entry-card");
+  language.querySelector('[data-key="role"]').value = "Spanish";
+  language.querySelector('[data-key="role"]').dispatchEvent(
+    new window.Event("input", { bubbles: true }),
+  );
+  language.querySelector('[data-key="proficiency"]').value = "Conversational";
+  language.querySelector('[data-key="proficiency"]').dispatchEvent(
+    new window.Event("input", { bubbles: true }),
+  );
+
+  assert.match(document.querySelector("#certifications-preview").textContent, /Cloud Practitioner/);
+  assert.match(document.querySelector("#certifications-preview").textContent, /Example Academy/);
+  assert.match(document.querySelector("#languages-preview").textContent, /Spanish/);
+  assert.match(document.querySelector("#languages-preview").textContent, /Conversational/);
+});
+
+test("template selection updates the preview and persists locally", async () => {
+  await openApp();
+  const selector = document.querySelector("#template-select");
+  selector.value = "modern";
+  selector.dispatchEvent(new window.Event("change", { bubbles: true }));
+  window.dispatchEvent(new window.Event("pagehide"));
+
+  assert.equal(document.querySelector("#resume-preview").dataset.template, "modern");
+  assert.equal(JSON.parse(localStorage.getItem("resumecraft-draft-v1")).template, "modern");
+
+  await openApp(JSON.parse(localStorage.getItem("resumecraft-draft-v1")));
+  assert.equal(document.querySelector("#template-select").value, "modern");
+  assert.equal(document.querySelector("#resume-preview").dataset.template, "modern");
+});
+
+test("paper size selector configures letter or A4 print dimensions", async () => {
+  await openApp();
+  const selector = document.querySelector("#paper-size-select");
+  selector.value = "a4";
+  selector.dispatchEvent(new window.Event("change", { bubbles: true }));
+  assert.match(document.querySelector("#print-page-style").textContent, /size:\s*A4/);
+
+  selector.value = "letter";
+  selector.dispatchEvent(new window.Event("change", { bubbles: true }));
+  assert.match(document.querySelector("#print-page-style").textContent, /size:\s*letter/);
+});
