@@ -331,6 +331,26 @@ test("AI suggestions are reviewed before applying and only selected text is sent
   assert.match(document.querySelector('[data-preview="summary"]').textContent, /Improved mobile workflows/);
 });
 
+test("AI requests are not sent when the user declines confirmation", async () => {
+  const requests = [];
+  await openApp(
+    { summary: "Selected summary." },
+    {
+      fetch: async (url) => {
+        requests.push(url);
+        return { ok: true, json: async () => ({ available: true }) };
+      },
+    },
+  );
+  await nextTask();
+  window.confirm = () => false;
+  document.querySelector('[data-ai-rewrite="summary"]').click();
+  await nextTask();
+
+  assert.deepEqual(requests, ["/api/v1/ai/status"]);
+  assert.equal(document.querySelector('[name="summary"]').value, "Selected summary.");
+});
+
 test("JSON resume imports are normalized and replace only after confirmation", async () => {
   await openApp({ name: "Old resume" });
   const fileInput = document.querySelector("#import-file");

@@ -102,6 +102,7 @@ function aiControls(target) {
     </button>
     <p class="ai-privacy-note" hidden>
       Only this text and your professional title are sent to Google Gemini after confirmation.
+      Avoid including confidential information.
     </p>
     <div class="ai-suggestion" data-ai-suggestion="${target}" hidden></div>`;
 }
@@ -311,6 +312,7 @@ async function requestRewrite(button) {
   if (!rewrite?.field || !rewrite.field.value.trim()) return;
   if (!window.confirm(
     "Send only this selected text and your professional title to Google Gemini for a rewrite? " +
+    "Do not send confidential information. " +
     "Your other resume details are not sent. Review the suggestion before applying it.",
   )) return;
 
@@ -374,7 +376,7 @@ document.querySelector("#export-button").addEventListener("click", () => {
   link.href = url;
   link.download = "resumecraft-resume.json";
   link.click();
-  window.URL.revokeObjectURL(url);
+  window.setTimeout(() => window.URL.revokeObjectURL(url), 0);
   saveState.textContent = "Resume exported";
 });
 

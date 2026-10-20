@@ -17,7 +17,7 @@ Run `mvn spring-boot:run` (or `npm start`) from the project directory, then open
 - `src/main/java/com/resumecraft`: Spring Boot application and versioned API.
 - `src/main/resources/static`: browser-based editor and resume preview, served from the same origin.
 - `src/test/java`: backend API tests.
-- The browser remains the source of truth for resume drafts. Resume contents are not sent to the backend; no database, account, or cross-origin setup is needed for the initial experience.
+- The browser remains the source of truth for resume drafts; the application does not persist or sync resume contents on the server. Only text explicitly selected for an AI request, plus the professional title for context, is sent to Gemini after confirmation.
 - Add domain, application, and persistence layers when a validated feature—such as opt-in cloud sync—needs them. Keep resume-data handling explicit and access-controlled before introducing server-side storage.
 - Resume drafts remain local. JSON export/import supports backups without introducing accounts or cloud storage.
 - Optional Gemini writing assistance sends only the selected summary or experience description and the professional title after the user confirms. Suggestions are never applied automatically; users must review them for accuracy.
