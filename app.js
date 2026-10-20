@@ -1,57 +1,9 @@
-const STORAGE_KEY = "resumecraft-draft-v1";
+import { createEntry, loadResume, STORAGE_KEY } from "./resume-data.mjs";
 
-const initialResume = {
-  name: "",
-  title: "",
-  email: "",
-  phone: "",
-  location: "",
-  website: "",
-  summary: "",
-  skills: "",
-  experience: [],
-  education: [],
-};
-
-const entryFields = ["role", "organization", "start", "end", "description"];
 const form = document.querySelector("#resume-form");
 const saveState = document.querySelector("#save-state");
 let saveTimer;
 let resume = loadResume();
-
-function normalizeEntries(entries) {
-  return entries.map((entry) => {
-    const source = entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
-    return Object.fromEntries(
-      entryFields.map((field) => [field, typeof source[field] === "string" ? source[field] : ""]),
-    );
-  });
-}
-
-function loadResume() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    if (!saved || typeof saved !== "object" || Array.isArray(saved)) {
-      return structuredClone(initialResume);
-    }
-
-    return {
-      ...initialResume,
-      ...Object.fromEntries(
-        Object.keys(initialResume)
-          .filter((field) => typeof initialResume[field] === "string")
-          .map((field) => [
-            field,
-            typeof saved[field] === "string" ? saved[field] : initialResume[field],
-          ]),
-      ),
-      experience: Array.isArray(saved.experience) ? normalizeEntries(saved.experience) : [],
-      education: Array.isArray(saved.education) ? normalizeEntries(saved.education) : [],
-    };
-  } catch {
-    return structuredClone(initialResume);
-  }
-}
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => {
@@ -158,7 +110,7 @@ function renderPreview() {
 
   const website = document.querySelector('[data-preview="website"]');
   const safeUrl = safeWebsiteUrl(resume.website);
-  website.textContent = resume.website ? resume.website.replace(/^https?:\/\//i, "") : "";
+  website.textContent = safeUrl ? resume.website.trim().replace(/^https?:\/\//i, "") : "";
   website.href = safeUrl || "#";
   website.hidden = !safeUrl;
 
@@ -219,7 +171,7 @@ document.addEventListener("click", (event) => {
   const addButton = event.target.closest("[data-add]");
   if (addButton) {
     const type = addButton.dataset.add;
-    resume[type].push({ role: "", organization: "", start: "", end: "", description: "" });
+    resume[type].push(createEntry());
     renderEntryForm(type);
     renderPreview();
     saveDraft();
@@ -230,10 +182,17 @@ document.addEventListener("click", (event) => {
   const removeButton = event.target.closest("[data-remove]");
   if (removeButton) {
     const { remove: type, index } = removeButton.dataset;
-    resume[type].splice(Number(index), 1);
+    const removedIndex = Number(index);
+    resume[type].splice(removedIndex, 1);
     renderEntryForm(type);
     renderPreview();
     saveDraft();
+    if (resume[type].length) {
+      const nextIndex = Math.min(removedIndex, resume[type].length - 1);
+      document.querySelector(`[data-remove="${type}"][data-index="${nextIndex}"]`)?.focus();
+    } else {
+      document.querySelector(`[data-add="${type}"]`)?.focus();
+    }
   }
 });
 

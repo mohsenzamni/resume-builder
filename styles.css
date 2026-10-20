@@ -491,8 +491,8 @@ textarea:focus-visible {
   font-size: 9px;
 }
 
-.resume-entry-subtitle {
-  margin-top: 1px !important;
+.resume-section .resume-entry-subtitle {
+  margin-top: 1px;
   color: var(--accent);
   font-size: 10px;
   font-weight: 600;

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "A lightweight, local-first resume builder.",
   "scripts": {
-    "start": "python3 -m http.server 4173"
+    "start": "python3 -m http.server 4173",
+    "test": "node --test"
   },
   "private": true,
   "keywords": [],
