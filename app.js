@@ -142,18 +142,30 @@ function populateForm() {
   renderEntryForm("education");
 }
 
+function persistDraft() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(resume));
+    saveState.textContent = "Saved on this device";
+  } catch {
+    saveState.textContent = "Could not save draft";
+  }
+}
+
 function saveDraft() {
   saveState.textContent = "Saving…";
   window.clearTimeout(saveTimer);
   saveTimer = window.setTimeout(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(resume));
-      saveState.textContent = "Saved on this device";
-    } catch {
-      saveState.textContent = "Could not save draft";
-    }
+    saveTimer = undefined;
+    persistDraft();
   }, 200);
 }
+
+window.addEventListener("pagehide", () => {
+  if (saveTimer === undefined) return;
+  window.clearTimeout(saveTimer);
+  saveTimer = undefined;
+  persistDraft();
+});
 
 form.addEventListener("input", (event) => {
   const target = event.target;
