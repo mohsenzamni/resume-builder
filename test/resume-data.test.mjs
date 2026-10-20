@@ -3,10 +3,13 @@ import test from "node:test";
 import {
   createEntry,
   createInitialResume,
+  ENTRY_FIELDS,
   loadResume,
   normalizeResume,
+  safeWebsiteUrl,
   STORAGE_KEY,
-} from "../resume-data.mjs";
+  websiteDisplayText,
+} from "../resume-data.js";
 
 test("invalid JSON starts with a clean draft", () => {
   const storage = { getItem: () => "{" };
@@ -77,4 +80,35 @@ test("draft loading reads the ResumeCraft storage key", () => {
 
   assert.equal(requestedKey, STORAGE_KEY);
   assert.equal(loaded.name, "Jordan Lee");
+});
+
+test("draft loading recovers when storage access throws", () => {
+  assert.deepEqual(
+    loadResume({
+      getItem() {
+        throw new Error("Storage unavailable");
+      },
+    }),
+    createInitialResume(),
+  );
+});
+
+test("website URLs allow HTTP(S) and normalize schemeless addresses", () => {
+  assert.equal(safeWebsiteUrl("https://example.com/path"), "https://example.com/path");
+  assert.equal(safeWebsiteUrl("linkedin.com/in/jordan"), "https://linkedin.com/in/jordan");
+});
+
+test("unsafe and malformed website URLs are rejected", () => {
+  assert.equal(safeWebsiteUrl("javascript:alert(1)"), "");
+  assert.equal(safeWebsiteUrl("ftp://example.com"), "");
+  assert.equal(safeWebsiteUrl("https://[invalid"), "");
+});
+
+test("website display text is derived from the validated URL", () => {
+  assert.equal(websiteDisplayText(" HTTPS://EXAMPLE.com/path "), "example.com/path");
+  assert.equal(websiteDisplayText("javascript:alert(1)"), "");
+});
+
+test("entry fields are restricted to the shared schema", () => {
+  assert.deepEqual(ENTRY_FIELDS, ["role", "organization", "start", "end", "description"]);
 });

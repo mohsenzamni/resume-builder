@@ -1,4 +1,12 @@
-import { createEntry, createInitialResume, loadResume, STORAGE_KEY } from "./resume-data.mjs";
+import {
+  createEntry,
+  createInitialResume,
+  ENTRY_FIELDS,
+  loadResume,
+  safeWebsiteUrl,
+  STORAGE_KEY,
+  websiteDisplayText,
+} from "./resume-data.js";
 
 const form = document.querySelector("#resume-form");
 const saveState = document.querySelector("#save-state");
@@ -16,18 +24,6 @@ function escapeHtml(value) {
     };
     return entities[character];
   });
-}
-
-function safeWebsiteUrl(value) {
-  const trimmed = String(value ?? "").trim();
-  if (!trimmed) return "";
-
-  try {
-    const url = new URL(/^[a-z][a-z\d+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`);
-    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
-  } catch {
-    return "";
-  }
 }
 
 function setText(selector, value, fallback = "") {
@@ -110,7 +106,7 @@ function renderPreview() {
 
   const website = document.querySelector('[data-preview="website"]');
   const safeUrl = safeWebsiteUrl(resume.website);
-  website.textContent = safeUrl ? resume.website.trim().replace(/^https?:\/\//i, "") : "";
+  website.textContent = websiteDisplayText(resume.website);
   website.href = safeUrl || "#";
   website.hidden = !safeUrl;
 
@@ -158,7 +154,17 @@ form.addEventListener("input", (event) => {
   const target = event.target;
   if (target.dataset.entry) {
     const { entry, index, key } = target.dataset;
-    resume[entry][Number(index)][key] = target.value;
+    const entryIndex = Number(index);
+    if (
+      !["experience", "education"].includes(entry) ||
+      !Number.isInteger(entryIndex) ||
+      entryIndex < 0 ||
+      entryIndex >= resume[entry].length ||
+      !ENTRY_FIELDS.includes(key)
+    ) {
+      return;
+    }
+    resume[entry][entryIndex][key] = target.value;
     renderPreview();
   } else if (target.name && Object.hasOwn(resume, target.name)) {
     resume[target.name] = target.value;

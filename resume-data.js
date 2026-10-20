@@ -14,23 +14,46 @@ const initialResume = {
 };
 
 const textFields = Object.keys(initialResume).filter((field) => typeof initialResume[field] === "string");
-const entryFields = ["role", "organization", "start", "end", "description"];
+export const ENTRY_FIELDS = ["role", "organization", "start", "end", "description"];
 
 export function createInitialResume() {
   return { ...initialResume, experience: [], education: [] };
 }
 
 export function createEntry() {
-  return Object.fromEntries(entryFields.map((field) => [field, ""]));
+  return Object.fromEntries(ENTRY_FIELDS.map((field) => [field, ""]));
 }
 
 function normalizeEntries(entries) {
   return entries.map((entry) => {
     const source = entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
     return Object.fromEntries(
-      entryFields.map((field) => [field, typeof source[field] === "string" ? source[field] : ""]),
+      ENTRY_FIELDS.map((field) => [
+        field,
+        typeof source[field] === "string" ? source[field] : "",
+      ]),
     );
   });
+}
+
+export function safeWebsiteUrl(value) {
+  const trimmed = String(value ?? "").trim();
+  if (!trimmed) return "";
+
+  try {
+    const url = new URL(/^[a-z][a-z\d+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`);
+    return ["http:", "https:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    return "";
+  }
+}
+
+export function websiteDisplayText(value) {
+  const safeUrl = safeWebsiteUrl(value);
+  if (!safeUrl) return "";
+
+  const url = new URL(safeUrl);
+  return `${url.host}${url.pathname}${url.search}${url.hash}`;
 }
 
 export function normalizeResume(saved) {
