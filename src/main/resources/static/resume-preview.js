@@ -12,12 +12,12 @@ function createElement(document, tagName, className, text) {
   return element;
 }
 
-function createSection(document, id, title) {
+function createSection(document, id, title, idPrefix) {
   const section = createElement(document, "section", "resume-section");
-  section.id = `${id}-preview-section`;
+  section.id = `${idPrefix}${id}-preview-section`;
   section.append(createElement(document, "h2", "", title));
   const content = createElement(document, "div", "", "");
-  if (id !== "summary") content.id = `${id}-preview`;
+  if (id !== "summary") content.id = `${idPrefix}${id}-preview`;
   section.append(content);
   return section;
 }
@@ -52,7 +52,7 @@ function renderEntries(document, container, entries, fields) {
   });
 }
 
-export function createResumePreview(document, resume, { className = "" } = {}) {
+export function createResumePreview(document, resume, { className = "", idPrefix = "" } = {}) {
   const paper = createElement(document, "article", `resume-paper ${className}`.trim());
   paper.dataset.template = resume.template;
   paper.setAttribute("aria-label", "Resume preview");
@@ -84,7 +84,7 @@ export function createResumePreview(document, resume, { className = "" } = {}) {
   header.append(contact);
   paper.append(header);
 
-  const summary = createSection(document, "summary", "Profile");
+  const summary = createSection(document, "summary", "Profile", idPrefix);
   summary.hidden = !resume.summary.trim();
   const summaryContent = summary.lastElementChild;
   const summaryText = createElement(document, "p", "resume-summary", resume.summary);
@@ -100,16 +100,16 @@ export function createResumePreview(document, resume, { className = "" } = {}) {
     languages: "Languages",
   };
   ENTRY_TYPES.forEach((type) => {
-    const section = createSection(document, type, sectionTitles[type]);
+    const section = createSection(document, type, sectionTitles[type], idPrefix);
     renderEntries(document, section, resume[type], ENTRY_FIELDS[type]);
     paper.append(section);
   });
 
-  const skillsSection = createSection(document, "skills", "Skills");
+  const skillsSection = createSection(document, "skills", "Skills", idPrefix);
   const skills = resume.skills.split(/[,\n]/).map((skill) => skill.trim()).filter(Boolean);
   skillsSection.hidden = skills.length === 0;
   const skillsContent = skillsSection.lastElementChild;
-  skillsContent.id = "skills-preview";
+  skillsContent.id = `${idPrefix}skills-preview`;
   skillsContent.className = "skills-preview";
   skills.forEach((skill) => skillsContent.append(createElement(document, "span", "skill-chip", skill)));
   paper.append(skillsSection);

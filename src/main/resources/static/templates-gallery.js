@@ -55,7 +55,13 @@ templateCategories.forEach((category) => addOption(categoryFilter, category, cat
 templates.forEach((template) => addOption(dialogSelect, template.id, template.name));
 
 function renderTemplatePreview(template, container, className) {
-  const preview = createResumePreview(document, { ...previewResume, template: template.id }, { className });
+  const idPrefix = container === document.querySelector("#template-dialog-preview")
+    ? "dialog-"
+    : `card-${template.id}-`;
+  const preview = createResumePreview(document, { ...previewResume, template: template.id }, {
+    className,
+    idPrefix,
+  });
   container.replaceChildren(preview);
 }
 
@@ -125,8 +131,6 @@ function renderGallery() {
     ? left.name.localeCompare(right.name)
     : left.recommended - right.recommended);
   results.replaceChildren(...visible.map(createCard));
-  document.querySelector("#template-count").textContent =
-    `${templates.length} ${templates.length === 1 ? "template" : "templates"}`;
   document.querySelector("#template-result-count").textContent =
     `${visible.length} of ${templates.length} templates`;
   document.querySelector("#template-empty").hidden = visible.length > 0;
@@ -160,4 +164,6 @@ dialog.addEventListener("click", (event) => {
   if (event.target === dialog) dialog.close();
 });
 
+document.querySelector("#template-count").textContent =
+  `${templates.length} ${templates.length === 1 ? "template" : "templates"}`;
 renderGallery();

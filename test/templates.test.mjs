@@ -53,6 +53,8 @@ test("gallery displays registered templates and searches metadata", async () => 
   assert.equal(document.querySelectorAll(".template-card").length, templates.length);
   assert.equal(document.querySelector("#template-count").textContent, "5 templates");
   assert.equal(document.querySelector("#template-sample-note").hidden, false);
+  const ids = [...document.querySelectorAll("[id]")].map((element) => element.id);
+  assert.equal(new Set(ids).size, ids.length);
 
   const search = document.querySelector("#template-search");
   search.value = "ats-friendly";
