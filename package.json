@@ -1,0 +1,16 @@
+{
+  "name": "resume-builder",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "start": "python3 -m http.server 4173"
+  },
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "http://localhost:26831/mohsenzamni/resume-builder"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
