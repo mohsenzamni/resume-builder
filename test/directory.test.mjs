@@ -24,6 +24,10 @@ test("curated role guides have unique slugs, guidance, and example terms", () =>
     assert.ok(role.category);
     assert.ok(role.focus.length > 0);
     assert.ok(role.keywords.length > 0);
+    assert.ok(role.suggestedSections.length > 0);
+    assert.ok(role.suggestedSections.every((section) =>
+      ["experience", "education", "projects", "certifications", "languages", "skills"].includes(section)));
+    assert.match(role.exampleFrame, /\[[^\]]+\]/);
   }
 });
 

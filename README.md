@@ -4,9 +4,9 @@ A lightweight, English-language, left-to-right resume builder backed by a Spring
 
 The editor includes optional experience, education, projects, certifications, languages, and skills sections; each repeatable section supports editing, removal, reordering, live preview, and local draft saving. Choose from five original layouts—Classic, Modern, Minimal, Executive, and Compact—and print on US Letter or A4 paper. An on-device quality checklist offers general reminders without scoring a resume or making hiring predictions.
 
-The role directory currently contains 12 original, curated role guides with searchable prompts and example skills. They are starting points—not job-market research or requirements. You can export a local JSON backup or import a ResumeCraft JSON export.
+The role directory currently contains 12 original, curated role guides with searchable prompts and example skills. Choosing a guide opens the editor with optional section suggestions and a fill-in sentence frame; it never inserts sample employers, achievements, or skills into your resume. The examples are prompts, not job-market research or requirements. You can export a local JSON backup or import a ResumeCraft JSON export.
 
-Browse the template gallery at `/templates.html` to search, filter by design category, compare previews, and apply a template. Gallery previews use the current browser draft, or clearly labeled sample content when the draft is empty. Template metadata is registered in `src/main/resources/static/templates.js`; add an entry there and matching `data-template` styles in `styles.css`. The gallery and editor share the renderer in `resume-preview.js`, and PDF output continues to use browser print.
+Browse the template gallery at `/templates.html` to search, filter by design category, compare previews, and apply a template. Classic is the recommended conventional single-column starting point; no template guarantees compatibility with every applicant-tracking system. Gallery previews use the current browser draft, or clearly labeled sample content when the draft is empty. Template metadata is registered in `src/main/resources/static/templates.js`; add an entry there and matching `data-template` styles in `styles.css`. The gallery and editor share the renderer in `resume-preview.js`.
 
 ## Run locally
 
@@ -26,7 +26,9 @@ Run `mvn spring-boot:run` (or `npm start`) from the project directory, then open
 - AI is disabled unless `AI_API_KEY` is configured on the server. The key is never sent to the browser. Configure `AI_BASE_URL` and `AI_MODEL` for your provider or LiteLLM deployment. The current in-memory request limit is per application process; production deployments should also configure provider quotas and edge-level rate limiting.
 - Defer accounts, cloud sync, and payments until those product requirements are validated. Role guidance and AI assistance remain product hypotheses until tested with users.
 
-Drafts, including the selected template, are saved in the current browser's local storage; clearing browser data removes them. Select **Download PDF**, choose US Letter or A4, and choose **Save as PDF** in the print dialog. Long entries flow across pages while individual resume entries are kept together when possible.
+Drafts, including the selected template, are saved in the current browser's local storage; clearing browser data removes them. Select **Download PDF**, choose US Letter or A4, and choose **Save as PDF** in the browser print dialog. This is not yet a direct file download, and DOCX export is not available. Long entries flow across pages while individual resume entries are kept together when possible.
+
+PDF export improvements should preserve selectable text, reliable pagination, and local processing of resume data; screenshot-based output may not meet those requirements. DOCX should be a separate export generated from the structured resume data and evaluated for Word compatibility and RTL support before implementation.
 
 ## Test
 

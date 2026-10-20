@@ -130,16 +130,24 @@ export function initializeTemplateGallery({
     content.className = "template-card-content";
     const titleRow = document.createElement("div");
     titleRow.className = "template-card-title";
-    titleRow.append(
-      Object.assign(document.createElement("h2"), { textContent: template.name }),
-      Object.assign(document.createElement("button"), {
-        type: "button",
-        className: "button button-quiet template-preview-action",
-        textContent: "Preview",
-      }),
-    );
-    titleRow.lastElementChild.setAttribute("aria-label", `Preview ${template.name} template`);
-    titleRow.lastElementChild.addEventListener("click", (event) =>
+    const title = document.createElement("h2");
+    title.textContent = template.name;
+    if (template.default) {
+      const badge = document.createElement("span");
+      badge.className = "template-recommended-badge";
+      badge.textContent = "Recommended";
+      titleRow.append(title, badge);
+    } else {
+      titleRow.append(title);
+    }
+    const titlePreviewButton = Object.assign(document.createElement("button"), {
+      type: "button",
+      className: "button button-quiet template-preview-action",
+      textContent: "Preview",
+    });
+    titleRow.append(titlePreviewButton);
+    titlePreviewButton.setAttribute("aria-label", `Preview ${template.name} template`);
+    titlePreviewButton.addEventListener("click", (event) =>
       openTemplatePreview(template.id, event.currentTarget));
 
     const description = document.createElement("p");

@@ -77,6 +77,14 @@ const rolePrefilled = Boolean(requestedRole && !resume.title.trim());
 if (rolePrefilled) {
   resume.title = requestedRole.title;
 }
+const sectionLabels = {
+  experience: "Experience",
+  education: "Education",
+  projects: "Projects",
+  certifications: "Certifications",
+  languages: "Languages",
+  skills: "Skills",
+};
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => {
@@ -89,6 +97,31 @@ function escapeHtml(value) {
     };
     return entities[character];
   });
+}
+
+function renderRoleGuidance() {
+  if (!requestedRole) return;
+
+  const guidance = document.querySelector("#role-guidance");
+  guidance.hidden = false;
+  document.querySelector("#role-guidance-title").textContent =
+    `Writing guide for ${requestedRole.title}`;
+  document.querySelector("#role-guidance-overview").textContent = requestedRole.overview;
+  document.querySelector("#role-guidance-focus").replaceChildren(
+    ...requestedRole.focus.map((prompt) => {
+      const item = document.createElement("li");
+      item.textContent = prompt;
+      return item;
+    }),
+  );
+  document.querySelector("#role-guidance-sections").replaceChildren(
+    ...requestedRole.suggestedSections.map((section) => {
+      const item = document.createElement("li");
+      item.textContent = sectionLabels[section];
+      return item;
+    }),
+  );
+  document.querySelector("#role-guidance-example").textContent = requestedRole.exampleFrame;
 }
 
 function aiControls(target) {
@@ -386,6 +419,7 @@ importFile.addEventListener("change", async () => {
     saveTimer = undefined;
     resume = normalizeResume(payload.resume);
     populateForm();
+    renderRoleGuidance();
     renderPreview();
     persistDraft();
     saveState.textContent = "Imported and saved on this device";
@@ -529,6 +563,7 @@ document.querySelector("#clear-button").addEventListener("click", () => {
   saveTimer = undefined;
   resume = createInitialResume();
   populateForm();
+  renderRoleGuidance();
   renderPreview();
 
   try {
@@ -540,6 +575,7 @@ document.querySelector("#clear-button").addEventListener("click", () => {
 });
 
 populateForm();
+renderRoleGuidance();
 renderPreview();
 if (rolePrefilled) persistDraft();
 void checkAIAvailability();

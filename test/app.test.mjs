@@ -334,13 +334,26 @@ test("print styles declare page dimensions and hide editor controls", () => {
 });
 
 test("role directory links can prefill a title without replacing an existing title", async () => {
-  await openApp({}, { url: "http://localhost/?role=software-engineer" });
+  await openApp(
+    { name: "Taylor", summary: "My real background" },
+    { url: "http://localhost/?role=software-engineer" },
+  );
   assert.equal(document.querySelector('[name="title"]').value, "Software Engineer");
+  assert.equal(document.querySelector("#role-guidance").hidden, false);
+  assert.match(document.querySelector("#role-guidance-example").textContent, /\[system or feature\]/);
   window.dispatchEvent(new window.Event("pagehide"));
-  assert.equal(JSON.parse(localStorage.getItem("resumecraft-draft-v1")).title, "Software Engineer");
+  const savedDraft = JSON.parse(localStorage.getItem("resumecraft-draft-v1"));
+  assert.equal(savedDraft.title, "Software Engineer");
+  assert.equal(savedDraft.name, "Taylor");
+  assert.equal(savedDraft.summary, "My real background");
+  assert.deepEqual(savedDraft.experience, []);
 
   await openApp({ title: "My saved title" }, { url: "http://localhost/?role=software-engineer" });
   assert.equal(document.querySelector('[name="title"]').value, "My saved title");
+  assert.equal(document.querySelector("#role-guidance").hidden, false);
+
+  await openApp({}, { url: "http://localhost/" });
+  assert.equal(document.querySelector("#role-guidance").hidden, true);
 });
 
 test("AI suggestions are reviewed before applying and only selected text is sent", async () => {

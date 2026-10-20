@@ -49,6 +49,7 @@ afterEach(() => {
 test("template registry provides unique, searchable metadata and supported categories", () => {
   const ids = templates.map((template) => template.id);
   assert.equal(new Set(ids).size, ids.length);
+  assert.deepEqual(templates.filter((template) => template.default).map(({ id }) => id), ["classic"]);
   for (const template of templates) {
     assert.ok(template.name);
     assert.ok(template.description);
@@ -69,10 +70,10 @@ test("gallery displays registered templates and searches metadata", async () => 
   const classicCard = document.querySelector(".template-card");
 
   const search = document.querySelector("#template-search");
-  search.value = "ats-friendly";
+  search.value = "ats-conscious";
   search.dispatchEvent(new window.Event("input", { bubbles: true }));
-  assert.equal(document.querySelectorAll(".template-card").length, 1);
-  assert.equal(document.querySelector(".template-card-content h2").textContent, "Minimal");
+  assert.equal(document.querySelectorAll(".template-card").length, 2);
+  assert.equal(document.querySelector(".template-recommended-badge")?.textContent, "Recommended");
 
   search.value = "no-such-template";
   search.dispatchEvent(new window.Event("input", { bubbles: true }));

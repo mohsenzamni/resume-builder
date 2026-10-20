@@ -275,6 +275,73 @@ textarea:focus-visible {
   line-height: 1.5;
 }
 
+.role-guidance {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid #d9def5;
+  border-radius: 12px;
+  background: #fff;
+  color: #4c5870;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.role-guidance[hidden] {
+  display: none;
+}
+
+.role-guidance .eyebrow {
+  margin: 0 0 5px;
+}
+
+.role-guidance h2 {
+  margin: 0;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.role-guidance h3 {
+  margin: 14px 0 4px;
+  color: var(--ink);
+  font-size: 11px;
+}
+
+.role-guidance > p:not(.eyebrow) {
+  margin: 6px 0 0;
+}
+
+.role-guidance ul {
+  display: grid;
+  gap: 4px;
+  margin: 5px 0 0;
+  padding-left: 18px;
+}
+
+.role-guidance-sections {
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+}
+
+.role-guidance-example {
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 6px 6px 0;
+  background: #f5f6ff;
+  color: var(--ink);
+}
+
+.role-guidance-note {
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.role-guidance > a {
+  display: inline-block;
+  margin-top: 10px;
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+}
+
 .quality-check {
   margin: 22px 0 28px;
   padding: 16px 18px;
@@ -1117,9 +1184,20 @@ textarea:focus-visible {
 }
 
 .template-card-title h2 {
+  min-width: 0;
   margin: 0;
   color: var(--ink);
   font-size: 16px;
+}
+
+.template-recommended-badge {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 12px;
+  background: #edf3ff;
+  color: #344b96;
+  font-size: 9px;
+  font-weight: 700;
 }
 
 .template-card-title .button {

@@ -10,6 +10,8 @@ export const jobRoles = [
       "Include outcomes or scale only when you can support them.",
     ],
     keywords: ["Software development", "Testing", "APIs", "Code review"],
+    suggestedSections: ["experience", "projects", "skills"],
+    exampleFrame: "Built or improved [system or feature] using [tools or methods], contributing to [verified result or user impact].",
   },
   {
     slug: "product-designer",
@@ -22,6 +24,8 @@ export const jobRoles = [
       "Explain what changed after launch or testing when you know the result.",
     ],
     keywords: ["Interaction design", "Prototyping", "User research", "Accessibility"],
+    suggestedSections: ["experience", "projects", "skills"],
+    exampleFrame: "Researched or prototyped [user problem] with [method], informing [decision or change you can verify].",
   },
   {
     slug: "data-analyst",
@@ -34,6 +38,8 @@ export const jobRoles = [
       "State the decision or outcome without inventing a metric.",
     ],
     keywords: ["SQL", "Data visualization", "Reporting", "Data quality"],
+    suggestedSections: ["experience", "projects", "skills"],
+    exampleFrame: "Analyzed [data or question] using [tool or method] to support [decision or finding you can verify].",
   },
   {
     slug: "marketing-specialist",
@@ -46,6 +52,8 @@ export const jobRoles = [
       "Use campaign results only when you have reliable figures.",
     ],
     keywords: ["Campaign planning", "Content", "Analytics", "Audience research"],
+    suggestedSections: ["experience", "projects", "skills"],
+    exampleFrame: "Created or evaluated [campaign or content] for [audience] using [channel or method], with [verified outcome if available].",
   },
   {
     slug: "project-manager",
@@ -58,6 +66,8 @@ export const jobRoles = [
       "Explain delivery outcomes with evidence rather than unsupported claims.",
     ],
     keywords: ["Project planning", "Stakeholder communication", "Risk management", "Delivery"],
+    suggestedSections: ["experience", "projects", "certifications"],
+    exampleFrame: "Coordinated [project or workstream] with [stakeholders or approach], delivering [verified outcome or milestone].",
   },
   {
     slug: "customer-success-manager",
@@ -70,6 +80,8 @@ export const jobRoles = [
       "Include retention or satisfaction results only if you can verify them.",
     ],
     keywords: ["Customer onboarding", "Account management", "Product adoption", "Communication"],
+    suggestedSections: ["experience", "skills", "certifications"],
+    exampleFrame: "Supported [customer group] through [onboarding, adoption, or issue] by [your action], with [verified outcome if available].",
   },
   {
     slug: "human-resources-manager",
@@ -82,6 +94,8 @@ export const jobRoles = [
       "Use aggregate outcomes and avoid confidential employee details.",
     ],
     keywords: ["Recruiting", "Employee relations", "HR operations", "People programs"],
+    suggestedSections: ["experience", "certifications", "education"],
+    exampleFrame: "Supported [people program or process] by [your contribution], while protecting [relevant confidentiality or compliance need].",
   },
   {
     slug: "financial-analyst",
@@ -94,6 +108,8 @@ export const jobRoles = [
       "Do not include confidential financial figures or unsupported savings claims.",
     ],
     keywords: ["Financial modeling", "Forecasting", "Reporting", "Variance analysis"],
+    suggestedSections: ["experience", "education", "skills"],
+    exampleFrame: "Prepared [analysis or report] using [tools or methods] to inform [decision or finding you can share].",
   },
   {
     slug: "registered-nurse",
@@ -106,6 +122,8 @@ export const jobRoles = [
       "Avoid identifying patient details or sharing protected health information.",
     ],
     keywords: ["Patient care", "Clinical documentation", "Care coordination", "Patient safety"],
+    suggestedSections: ["experience", "certifications", "education"],
+    exampleFrame: "Provided [type of care] in [care setting], following [relevant protocol or practice] while protecting patient privacy.",
   },
   {
     slug: "teacher",
@@ -118,6 +136,8 @@ export const jobRoles = [
       "Use outcomes only when they are accurate and appropriately contextualized.",
     ],
     keywords: ["Lesson planning", "Classroom management", "Assessment", "Inclusive instruction"],
+    suggestedSections: ["experience", "education", "certifications"],
+    exampleFrame: "Planned or delivered [subject or learning activity] for [grade or learner group], adapting [approach] to support [verified need or goal].",
   },
   {
     slug: "graphic-designer",
@@ -130,6 +150,8 @@ export const jobRoles = [
       "Link to work you have permission to share.",
     ],
     keywords: ["Visual communication", "Brand design", "Typography", "Digital production"],
+    suggestedSections: ["experience", "projects", "skills"],
+    exampleFrame: "Designed [deliverable] for [audience or brief] using [tools or process], contributing to [verified outcome if available].",
   },
   {
     slug: "operations-manager",
@@ -142,5 +164,7 @@ export const jobRoles = [
       "Quantify results only when you have a reliable source.",
     ],
     keywords: ["Process improvement", "Resource planning", "Operations", "Team coordination"],
+    suggestedSections: ["experience", "projects", "skills"],
+    exampleFrame: "Improved or coordinated [process or service] by [your action], resulting in [verified outcome or documented change].",
   },
 ];

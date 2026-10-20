@@ -2,9 +2,10 @@ export const templates = [
   {
     id: "classic",
     name: "Classic",
-    description: "A familiar, balanced layout for a wide range of roles.",
-    categories: ["Professional", "Entry-Level", "Academic"],
-    tags: ["traditional", "single column", "clear sections"],
+    description: "Recommended starting point: a conventional, single-column layout with clear sections.",
+    categories: ["Professional", "Entry-Level", "Academic", "ATS-Conscious"],
+    tags: ["recommended", "traditional", "single column"],
+    default: true,
     recommended: 1,
   },
   {
@@ -20,7 +21,7 @@ export const templates = [
     name: "Minimal",
     description: "A simple, low-distraction design with clean typography.",
     categories: ["Minimal", "Professional", "Entry-Level"],
-    tags: ["ats-friendly", "simple", "single column"],
+    tags: ["ATS-conscious", "simple", "single column"],
     recommended: 3,
   },
   {
