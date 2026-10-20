@@ -13,10 +13,20 @@ const initialResume = {
   education: [],
 };
 
+const entryFields = ["role", "organization", "start", "end", "description"];
 const form = document.querySelector("#resume-form");
 const saveState = document.querySelector("#save-state");
 let saveTimer;
 let resume = loadResume();
+
+function normalizeEntries(entries) {
+  return entries.map((entry) => {
+    const source = entry && typeof entry === "object" && !Array.isArray(entry) ? entry : {};
+    return Object.fromEntries(
+      entryFields.map((field) => [field, typeof source[field] === "string" ? source[field] : ""]),
+    );
+  });
+}
 
 function loadResume() {
   try {
@@ -27,9 +37,16 @@ function loadResume() {
 
     return {
       ...initialResume,
-      ...saved,
-      experience: Array.isArray(saved.experience) ? saved.experience : [],
-      education: Array.isArray(saved.education) ? saved.education : [],
+      ...Object.fromEntries(
+        Object.keys(initialResume)
+          .filter((field) => typeof initialResume[field] === "string")
+          .map((field) => [
+            field,
+            typeof saved[field] === "string" ? saved[field] : initialResume[field],
+          ]),
+      ),
+      experience: Array.isArray(saved.experience) ? normalizeEntries(saved.experience) : [],
+      education: Array.isArray(saved.education) ? normalizeEntries(saved.education) : [],
     };
   } catch {
     return structuredClone(initialResume);
