@@ -122,7 +122,7 @@ test("preview uses the saved resume and switches templates without changing the 
   };
   const navigations = await openGallery(draft);
   assert.equal(document.querySelector("#template-sample-note").hidden, true);
-  document.querySelector(".template-preview-action").click();
+  document.querySelector(".template-card-preview-action").click();
 
   const dialog = document.querySelector("#template-preview-dialog");
   assert.equal(dialog.open, true);
@@ -171,6 +171,12 @@ test("storage failures show an error and do not navigate", async () => {
     },
   });
   document.querySelector(".template-use-card").click();
-  assert.match(document.querySelector("#template-result-count").textContent, /Could not save/i);
+  const status = document.querySelector("#template-action-status");
+  assert.match(status.textContent, /Could not save/i);
+  assert.equal(status.hidden, false);
+  const search = document.querySelector("#template-search");
+  search.value = "minimal";
+  search.dispatchEvent(new window.Event("input", { bubbles: true }));
+  assert.match(status.textContent, /Could not save/i);
   assert.deepEqual(navigations, []);
 });

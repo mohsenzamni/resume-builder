@@ -44,8 +44,14 @@ export function initializeTemplateGallery({
   const dialogPreview = document.querySelector("#template-dialog-preview");
   const cardCache = new Map();
   const navigateToEditor = navigate ?? (() => window.location.assign("./"));
+  let draftStorage = storage;
+  try {
+    draftStorage ??= window.localStorage;
+  } catch {
+    draftStorage = undefined;
+  }
 
-  const storedResume = loadResume(storage);
+  const storedResume = loadResume(draftStorage);
   const hasResumeContent = Object.entries(storedResume).some(([key, value]) =>
     key !== "template" && (Array.isArray(value)
       ? value.some((entry) => Object.values(entry).some((item) => item.trim()))
@@ -84,9 +90,11 @@ export function initializeTemplateGallery({
   }
 
   function applyTemplate(id) {
-    if (!saveTemplateSelection(id, storage)) {
-      document.querySelector("#template-result-count").textContent =
+    if (!saveTemplateSelection(id, draftStorage)) {
+      const status = document.querySelector("#template-action-status");
+      status.textContent =
         "Could not save your choice. Check browser storage and try again.";
+      status.hidden = false;
       return;
     }
     navigateToEditor("./");
@@ -98,8 +106,14 @@ export function initializeTemplateGallery({
 
     const preview = document.createElement("div");
     preview.className = "template-card-preview";
-    preview.setAttribute("aria-hidden", "true");
     renderTemplatePreview(template, preview, "template-thumbnail", `card-${template.id}-`);
+    preview.querySelector(".resume-paper").setAttribute("aria-hidden", "true");
+    const previewButton = document.createElement("button");
+    previewButton.type = "button";
+    previewButton.className = "template-card-preview-action";
+    previewButton.setAttribute("aria-label", `Preview ${template.name} template`);
+    previewButton.addEventListener("click", () => openTemplatePreview(template.id));
+    preview.append(previewButton);
 
     const content = document.createElement("div");
     content.className = "template-card-content";
