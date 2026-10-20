@@ -21,4 +21,4 @@ Drafts are saved in the current browser's local storage; clearing browser data r
 
 ## Test
 
-Run `mvn test` for backend tests and `npm test` for browser draft-normalization tests.
+Run `mvn test` for backend tests and `npm test` for draft normalization and DOM interaction tests.

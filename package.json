@@ -9,5 +9,8 @@
   },
   "private": true,
   "keywords": [],
-  "author": ""
+  "author": "",
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  }
 }

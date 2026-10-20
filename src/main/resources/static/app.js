@@ -183,7 +183,7 @@ form.addEventListener("input", (event) => {
     }
     resume[entry][entryIndex][key] = target.value;
     renderPreview();
-  } else if (target.name && Object.hasOwn(resume, target.name)) {
+  } else if (target.name && typeof resume[target.name] === "string") {
     resume[target.name] = target.value;
     renderPreview();
   }
