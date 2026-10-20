@@ -17,11 +17,11 @@ Run `mvn spring-boot:run` (or `npm start`) from the project directory, then open
 - `src/main/java/com/resumecraft`: Spring Boot application and versioned API.
 - `src/main/resources/static`: browser-based editor and resume preview, served from the same origin.
 - `src/test/java`: backend API tests.
-- The browser remains the source of truth for resume drafts; the application does not persist or sync resume contents on the server. Only text explicitly selected for an AI request, plus the professional title for context, is sent to Gemini after confirmation.
+- The browser remains the source of truth for resume drafts; the application does not persist or sync resume contents on the server. Only text explicitly selected for an AI request, plus the professional title for context, is sent to the configured provider after confirmation.
 - Add domain, application, and persistence layers when a validated feature—such as opt-in cloud sync—needs them. Keep resume-data handling explicit and access-controlled before introducing server-side storage.
 - Resume drafts remain local. JSON export/import supports backups without introducing accounts or cloud storage.
-- Optional Gemini writing assistance sends only the selected summary or experience description and the professional title after the user confirms. Suggestions are never applied automatically; users must review them for accuracy.
-- AI is disabled unless `GEMINI_API_KEY` is configured on the server. The API key is never sent to the browser. The current in-memory request limit is per application process; production deployments should also configure provider quotas and edge-level rate limiting.
+- Optional AI writing assistance uses an OpenAI-compatible chat-completions API, including OpenAI's API and LiteLLM. It sends only the selected summary or experience description and the professional title after the user confirms. Suggestions are never applied automatically; users must review them for accuracy.
+- AI is disabled unless `AI_API_KEY` is configured on the server. The key is never sent to the browser. Configure `AI_BASE_URL` and `AI_MODEL` for your provider or LiteLLM deployment. The current in-memory request limit is per application process; production deployments should also configure provider quotas and edge-level rate limiting.
 - Defer accounts, cloud sync, and payments until those product requirements are validated. Role guidance and AI assistance remain product hypotheses until tested with users.
 
 Drafts, including the selected template, are saved in the current browser's local storage; clearing browser data removes them. Select **Download PDF**, choose US Letter or A4, and choose **Save as PDF** in the print dialog. Long entries flow across pages while individual resume entries are kept together when possible.
@@ -32,4 +32,8 @@ Run `mvn test` for backend tests and `npm test` for draft normalization, editor,
 
 ### Optional AI setup
 
-Set `GEMINI_API_KEY` in the server environment to enable AI writing suggestions. `GEMINI_MODEL` can override the default model (`gemini-2.5-flash`). Without a key, the editor and role directory continue to work with AI controls disabled. When a user chooses an AI action, the selected text and professional title are sent to Google Gemini; other resume fields are not included. The user must confirm each request and review the returned suggestion before applying it.
+Set `AI_API_KEY` in the server environment to enable AI writing suggestions. The default endpoint is OpenAI's API (`https://api.openai.com/v1/`) with the `gpt-4o-mini` model. `AI_BASE_URL` and `AI_MODEL` can be configured for any compatible provider.
+
+For a LiteLLM proxy, point `AI_BASE_URL` at its OpenAI-compatible `/v1/` endpoint, set `AI_API_KEY` to the key accepted by that proxy, and set `AI_MODEL` to a configured model or deployment alias. Use HTTPS for hosted endpoints; a local development proxy can use its local HTTP URL. A ChatGPT subscription does not include OpenAI API access; API usage requires a separately configured API key and may be billed separately.
+
+Without a key, the editor and role directory continue to work with AI controls disabled. When a user chooses an AI action, the selected text and professional title are sent to the configured provider; other resume fields are not included. The user must confirm each request and review the returned suggestion before applying it.

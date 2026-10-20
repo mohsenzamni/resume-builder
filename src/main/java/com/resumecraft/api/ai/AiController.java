@@ -15,10 +15,10 @@ public class AiController {
     private static final int MAX_TEXT_LENGTH = 3000;
     private static final int MAX_ROLE_LENGTH = 120;
 
-    private final GeminiWritingService writingService;
+    private final OpenAiCompatibleWritingService writingService;
     private final AiRequestLimiter requestLimiter;
 
-    public AiController(GeminiWritingService writingService, AiRequestLimiter requestLimiter) {
+    public AiController(OpenAiCompatibleWritingService writingService, AiRequestLimiter requestLimiter) {
         this.writingService = writingService;
         this.requestLimiter = requestLimiter;
     }

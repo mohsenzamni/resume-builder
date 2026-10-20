@@ -101,7 +101,7 @@ function aiControls(target) {
       ✨ Improve with AI
     </button>
     <p class="ai-privacy-note" hidden>
-      Only this text and your professional title are sent to Google Gemini after confirmation.
+      Only this text and your professional title are sent to the configured AI provider after confirmation.
       Avoid including confidential information.
     </p>
     <div class="ai-suggestion" data-ai-suggestion="${target}" hidden></div>`;
@@ -311,7 +311,7 @@ async function requestRewrite(button) {
   const rewrite = getRewriteField(target);
   if (!rewrite?.field || !rewrite.field.value.trim()) return;
   if (!window.confirm(
-    "Send only this selected text and your professional title to Google Gemini for a rewrite? " +
+    "Send only this selected text and your professional title to the configured AI provider for a rewrite? " +
     "Do not send confidential information. " +
     "Your other resume details are not sent. Review the suggestion before applying it.",
   )) return;
