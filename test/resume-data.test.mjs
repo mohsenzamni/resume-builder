@@ -4,6 +4,7 @@ import {
   createEntry,
   createInitialResume,
   ENTRY_FIELDS,
+  ENTRY_TYPES,
   loadResume,
   normalizeResume,
   safeWebsiteUrl,
@@ -111,4 +112,5 @@ test("website display text is derived from the validated URL", () => {
 
 test("entry fields are restricted to the shared schema", () => {
   assert.deepEqual(ENTRY_FIELDS, ["role", "organization", "start", "end", "description"]);
+  assert.deepEqual(ENTRY_TYPES, ["experience", "education"]);
 });

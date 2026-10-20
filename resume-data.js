@@ -15,6 +15,7 @@ const initialResume = {
 
 const textFields = Object.keys(initialResume).filter((field) => typeof initialResume[field] === "string");
 export const ENTRY_FIELDS = ["role", "organization", "start", "end", "description"];
+export const ENTRY_TYPES = ["experience", "education"];
 
 export function createInitialResume() {
   return { ...initialResume, experience: [], education: [] };

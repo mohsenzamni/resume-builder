@@ -2,6 +2,7 @@ import {
   createEntry,
   createInitialResume,
   ENTRY_FIELDS,
+  ENTRY_TYPES,
   loadResume,
   safeWebsiteUrl,
   STORAGE_KEY,
@@ -107,7 +108,11 @@ function renderPreview() {
   const website = document.querySelector('[data-preview="website"]');
   const safeUrl = safeWebsiteUrl(resume.website);
   website.textContent = websiteDisplayText(resume.website);
-  website.href = safeUrl || "#";
+  if (safeUrl) {
+    website.href = safeUrl;
+  } else {
+    website.removeAttribute("href");
+  }
   website.hidden = !safeUrl;
 
   const summarySection = document.querySelector("#summary-preview-section");
@@ -177,6 +182,7 @@ document.addEventListener("click", (event) => {
   const addButton = event.target.closest("[data-add]");
   if (addButton) {
     const type = addButton.dataset.add;
+    if (!ENTRY_TYPES.includes(type)) return;
     resume[type].push(createEntry());
     renderEntryForm(type);
     renderPreview();
@@ -189,6 +195,14 @@ document.addEventListener("click", (event) => {
   if (removeButton) {
     const { remove: type, index } = removeButton.dataset;
     const removedIndex = Number(index);
+    if (
+      !ENTRY_TYPES.includes(type) ||
+      !Number.isInteger(removedIndex) ||
+      removedIndex < 0 ||
+      removedIndex >= resume[type].length
+    ) {
+      return;
+    }
     resume[type].splice(removedIndex, 1);
     renderEntryForm(type);
     renderPreview();
