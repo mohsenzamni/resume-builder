@@ -4,7 +4,7 @@
   "description": "A lightweight, local-first resume builder.",
   "type": "module",
   "scripts": {
-    "start": "python3 -m http.server 4173",
+    "start": "mvn spring-boot:run",
     "test": "node --test"
   },
   "private": true,

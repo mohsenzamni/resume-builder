@@ -10,7 +10,7 @@ import {
   safeWebsiteUrl,
   STORAGE_KEY,
   websiteDisplayText,
-} from "../resume-data.js";
+} from "../src/main/resources/static/resume-data.js";
 
 test("invalid JSON starts with a clean draft", () => {
   const storage = { getItem: () => "{" };
