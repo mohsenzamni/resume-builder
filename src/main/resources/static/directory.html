@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Explore role-specific resume prompts and build a resume around your own experience."
+    />
+    <title>Role Directory — ResumeCraft</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="ResumeCraft home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>ResumeCraft</span>
+      </a>
+      <nav class="topbar-actions" aria-label="Main navigation">
+        <a class="button button-quiet" href="./templates.html">Templates</a>
+        <a class="button button-quiet" href="./">Resume editor</a>
+      </nav>
+    </header>
+    <main class="directory">
+      <header class="directory-intro">
+        <p class="eyebrow">ROLE DIRECTORY</p>
+        <h1>Start with the work you want to do</h1>
+        <p>
+          Browse a small, curated set of role guides. Use the prompts to describe your real
+          experience; example skills are ideas, not requirements or claims about your background.
+        </p>
+      </header>
+      <section aria-label="Search roles">
+        <div class="directory-filters">
+          <label class="field">
+            <span>Search roles and guidance</span>
+            <input id="role-search" type="search" placeholder="e.g. software engineer" />
+          </label>
+          <label class="field">
+            <span>Category</span>
+            <select id="role-category">
+              <option value="">All categories</option>
+            </select>
+          </label>
+        </div>
+        <p id="role-result-count" class="role-result-count" role="status" aria-live="polite"></p>
+        <div id="role-results" class="role-results"></div>
+      </section>
+      <p class="directory-disclaimer">
+        Role guidance is general and may not match every employer or market. Never add skills,
+        qualifications, or results unless they are true for you.
+      </p>
+    </main>
+    <script src="./directory.js" type="module"></script>
+  </body>
+</html>

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Browse and preview professional ResumeCraft resume templates." />
+    <title>Resume Templates — ResumeCraft</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="ResumeCraft home">
+        <span class="brand-mark" aria-hidden="true">R</span>
+        <span>ResumeCraft</span>
+      </a>
+      <nav class="topbar-actions" aria-label="Main navigation">
+        <a class="button button-quiet" href="./">Resume editor</a>
+        <a class="button button-quiet" href="./directory.html">Role guides</a>
+      </nav>
+    </header>
+    <main class="template-gallery">
+      <header class="template-gallery-header">
+        <div>
+          <p class="eyebrow">TEMPLATE GALLERY</p>
+          <h1>Choose Your Resume Template</h1>
+          <p>Find a design that suits your professional identity. Preview it with your own resume before choosing.</p>
+        </div>
+        <span id="template-count" class="template-count"></span>
+      </header>
+      <section class="template-gallery-tools" aria-label="Find a resume template">
+        <label class="field template-search">
+          <span>Search templates</span>
+          <input id="template-search" type="search" placeholder="Search by name or style" />
+        </label>
+        <label class="field">
+          <span>Category</span>
+          <select id="template-category">
+            <option value="">All templates</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Sort by</span>
+          <select id="template-sort">
+            <option value="recommended">Recommended</option>
+            <option value="alphabetical">Name: A–Z</option>
+          </select>
+        </label>
+        <button id="template-reset" class="button button-quiet" type="button">Reset filters</button>
+      </section>
+      <p id="template-result-count" class="template-result-count" role="status" aria-live="polite"></p>
+      <p id="template-action-status" class="template-action-status" role="status" aria-live="polite" hidden></p>
+      <section id="template-results" class="template-grid" aria-label="Available resume templates"></section>
+      <p id="template-empty" class="template-empty" hidden>No templates match those filters. Try another search or reset filters.</p>
+      <p id="template-sample-note" class="template-sample-note" hidden>
+        These previews use sample information because no resume details were found in this browser.
+      </p>
+    </main>
+    <dialog id="template-preview-dialog" class="template-dialog" aria-labelledby="template-dialog-title">
+      <div class="template-dialog-header">
+        <div>
+          <p class="eyebrow">TEMPLATE PREVIEW</p>
+          <h2 id="template-dialog-title"></h2>
+          <p id="template-dialog-description"></p>
+        </div>
+        <button id="template-dialog-close" class="button button-quiet" type="button" aria-label="Close template preview">
+          Close
+        </button>
+      </div>
+      <div class="template-dialog-tools">
+        <label class="field">
+          <span>Preview another template</span>
+          <select id="template-dialog-select"></select>
+        </label>
+        <button id="template-use-button" class="button button-primary" type="button">Use This Template</button>
+      </div>
+      <p id="template-dialog-action-status" class="template-action-status" role="status" aria-live="polite" hidden></p>
+      <div id="template-dialog-preview" class="template-dialog-preview"></div>
+    </dialog>
+    <script src="./templates-gallery-bootstrap.js" type="module"></script>
+  </body>
+</html>

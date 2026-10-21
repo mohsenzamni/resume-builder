@@ -1,0 +1,19 @@
+{
+  "name": "resume-builder",
+  "version": "1.0.0",
+  "description": "A lightweight, local-first resume builder.",
+  "type": "module",
+  "scripts": {
+    "start": "mvn spring-boot:run",
+    "test": "node --test"
+  },
+  "private": true,
+  "keywords": [],
+  "author": "",
+  "devDependencies": {
+    "jsdom": "^30.1.3"
+  },
+  "dependencies": {
+    "pdfmake": "^0.3.12"
+  }
+}
