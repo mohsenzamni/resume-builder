@@ -30,7 +30,10 @@
         </button>
         <button class="button button-primary" id="print-button" type="button">
           <span aria-hidden="true">↓</span>
-          Download PDF
+          Download PDF (Classic)
+        </button>
+        <button class="button button-quiet" id="print-fallback-button" type="button">
+          Print / Save as PDF
         </button>
       </div>
     </header>
@@ -268,6 +271,8 @@
     </main>
     <noscript>This resume builder needs JavaScript enabled to edit and preview your resume.</noscript>
     <style id="print-page-style">@page { size: letter; margin: 0.55in; }</style>
+    <script src="./vendor/pdfmake.min.js"></script>
+    <script src="./vendor/vfs_fonts.js"></script>
     <script src="./app.js" type="module"></script>
   </body>
 </html>

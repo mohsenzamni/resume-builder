@@ -324,6 +324,70 @@ test("paper size selector configures letter or A4 print dimensions", async () =>
   assert.match(document.querySelector("#print-page-style").textContent, /size:\s*letter/);
 });
 
+test("PDF download creates a local file and retains browser print as a fallback", async () => {
+  await openApp({
+    name: "Alex Example",
+    title: "Product Designer",
+    email: "alex@example.com",
+    summary: "A verified professional summary.",
+  });
+  let downloaded;
+  window.pdfMake = {
+    createPdf(definition) {
+      return {
+        async download(filename) {
+          downloaded = { definition, filename };
+        },
+      };
+    },
+  };
+  const paperSize = document.querySelector("#paper-size-select");
+  paperSize.value = "a4";
+  paperSize.dispatchEvent(new window.Event("change", { bubbles: true }));
+
+  document.querySelector("#print-button").click();
+  await nextTask();
+  assert.equal(downloaded.filename, "Alex-Example.pdf");
+  assert.equal(downloaded.definition.pageSize, "A4");
+  assert.match(JSON.stringify(downloaded.definition.content), /A verified professional summary/);
+  assert.equal(document.querySelector("#save-state").textContent, "PDF downloaded");
+
+  let printCalls = 0;
+  window.print = () => { printCalls += 1; };
+  document.querySelector("#print-fallback-button").click();
+  assert.equal(printCalls, 1);
+
+  const selector = document.querySelector("#template-select");
+  selector.value = "modern";
+  selector.dispatchEvent(new window.Event("change", { bubbles: true }));
+  assert.equal(document.querySelector("#print-button").disabled, true);
+  assert.equal(document.querySelector("#print-fallback-button").disabled, false);
+  selector.value = "classic";
+  selector.dispatchEvent(new window.Event("change", { bubbles: true }));
+  assert.equal(document.querySelector("#print-button").disabled, false);
+});
+
+test("PDF download reports errors and leaves the print fallback available", async () => {
+  await openApp({ name: "Alex Example" });
+  window.pdfMake = {
+    createPdf() {
+      return { download: async () => { throw new Error("PDF generation failed."); } };
+    },
+  };
+
+  document.querySelector("#print-button").click();
+  await nextTask();
+  assert.equal(document.querySelector("#save-state").textContent, "PDF generation failed.");
+  assert.equal(document.querySelector("#print-fallback-button").disabled, false);
+});
+
+test("direct PDF download is enabled only for the Classic layout", async () => {
+  await openApp({ name: "Alex Example", template: "modern" });
+  assert.equal(document.querySelector("#print-button").disabled, true);
+  assert.match(document.querySelector("#print-button").title, /Classic template/);
+  assert.equal(document.querySelector("#print-fallback-button").disabled, false);
+});
+
 test("print styles declare page dimensions and hide editor controls", () => {
   assert.match(styles, /@page\s*\{\s*size:\s*letter;\s*margin:\s*0\.55in;\s*\}/);
 

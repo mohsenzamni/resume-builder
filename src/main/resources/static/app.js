@@ -12,6 +12,7 @@ import {
 import { jobRoles } from "./job-roles.js";
 import { createResumePreview } from "./resume-preview.js";
 import { templates } from "./templates.js";
+import { downloadResumePdf } from "./pdf-export.js";
 
 const sectionConfig = {
   experience: {
@@ -66,6 +67,7 @@ const form = document.querySelector("#resume-form");
 const saveState = document.querySelector("#save-state");
 const templateSelect = document.querySelector("#template-select");
 const paperSizeSelect = document.querySelector("#paper-size-select");
+const pdfDownloadButton = document.querySelector("#print-button");
 const importFile = document.querySelector("#import-file");
 let saveTimer;
 let resume = loadResume();
@@ -231,6 +233,13 @@ function populateForm() {
   }
   ENTRY_TYPES.forEach(renderEntryForm);
   templateSelect.value = resume.template;
+}
+
+function updatePdfDownloadAvailability() {
+  pdfDownloadButton.disabled = resume.template !== "classic";
+  pdfDownloadButton.title = pdfDownloadButton.disabled
+    ? "Direct PDF download currently supports the Classic template. Use Print / Save as PDF for other designs."
+    : "Download a text-based PDF using the Classic layout.";
 }
 
 templateSelect.replaceChildren(...templates.map((template) => {
@@ -420,6 +429,7 @@ importFile.addEventListener("change", async () => {
     resume = normalizeResume(payload.resume);
     populateForm();
     renderRoleGuidance();
+    updatePdfDownloadAvailability();
     renderPreview();
     persistDraft();
     saveState.textContent = "Imported and saved on this device";
@@ -532,7 +542,21 @@ document.addEventListener("click", (event) => {
   }
 });
 
-document.querySelector("#print-button").addEventListener("click", () => {
+document.querySelector("#print-button").addEventListener("click", async () => {
+  const button = document.querySelector("#print-button");
+  button.disabled = true;
+  saveState.textContent = "Preparing PDF…";
+  try {
+    await downloadResumePdf(window.pdfMake, resume, paperSizeSelect.value);
+    saveState.textContent = "PDF downloaded";
+  } catch (error) {
+    saveState.textContent = error.message || "Could not download the PDF. Try Print / Save as PDF.";
+  } finally {
+    updatePdfDownloadAvailability();
+  }
+});
+
+document.querySelector("#print-fallback-button").addEventListener("click", () => {
   window.print();
 });
 
@@ -542,6 +566,7 @@ templateSelect.addEventListener("change", () => {
     return;
   }
   resume.template = templateSelect.value;
+  updatePdfDownloadAvailability();
   renderPreview();
   saveDraft();
 });
@@ -564,6 +589,7 @@ document.querySelector("#clear-button").addEventListener("click", () => {
   resume = createInitialResume();
   populateForm();
   renderRoleGuidance();
+  updatePdfDownloadAvailability();
   renderPreview();
 
   try {
@@ -576,6 +602,7 @@ document.querySelector("#clear-button").addEventListener("click", () => {
 
 populateForm();
 renderRoleGuidance();
+updatePdfDownloadAvailability();
 renderPreview();
 if (rolePrefilled) persistDraft();
 void checkAIAvailability();

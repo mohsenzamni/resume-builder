@@ -102,6 +102,12 @@ button {
   transform: translateY(1px);
 }
 
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+  transform: none;
+}
+
 .button:focus-visible,
 input:focus-visible,
 textarea:focus-visible {

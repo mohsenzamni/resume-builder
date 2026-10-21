@@ -1,6 +1,6 @@
 # ResumeCraft
 
-A lightweight, English-language, left-to-right resume builder backed by a Spring Boot application. Edit your details with a live preview, save a draft locally in your browser, and use your browser's print dialog to save a PDF.
+A lightweight, English-language, left-to-right resume builder backed by a Spring Boot application. Edit your details with a live preview, save a draft locally in your browser, and download a text-based PDF locally or use browser printing.
 
 The editor includes optional experience, education, projects, certifications, languages, and skills sections; each repeatable section supports editing, removal, reordering, live preview, and local draft saving. Choose from five original layouts—Classic, Modern, Minimal, Executive, and Compact—and print on US Letter or A4 paper. An on-device quality checklist offers general reminders without scoring a resume or making hiring predictions.
 
@@ -26,9 +26,9 @@ Run `mvn spring-boot:run` (or `npm start`) from the project directory, then open
 - AI is disabled unless `AI_API_KEY` is configured on the server. The key is never sent to the browser. Configure `AI_BASE_URL` and `AI_MODEL` for your provider or LiteLLM deployment. The current in-memory request limit is per application process; production deployments should also configure provider quotas and edge-level rate limiting.
 - Defer accounts, cloud sync, and payments until those product requirements are validated. Role guidance and AI assistance remain product hypotheses until tested with users.
 
-Drafts, including the selected template, are saved in the current browser's local storage; clearing browser data removes them. Select **Download PDF**, choose US Letter or A4, and choose **Save as PDF** in the browser print dialog. This is not yet a direct file download, and DOCX export is not available. Long entries flow across pages while individual resume entries are kept together when possible.
+Drafts, including the selected template, are saved in the current browser's local storage; clearing browser data removes them. **Download PDF (Classic)** creates a text-based file directly in the browser using the resume data and selected US Letter or A4 page size; no resume content is sent to a PDF server. This is an early export prototype and currently supports only the Classic layout. For other designs or if direct generation fails, choose **Print / Save as PDF**. DOCX export is not available.
 
-PDF export improvements should preserve selectable text, reliable pagination, and local processing of resume data; screenshot-based output may not meet those requirements. DOCX should be a separate export generated from the structured resume data and evaluated for Word compatibility and RTL support before implementation.
+The PDF prototype uses pdfmake 0.3.12 and its bundled Roboto font files in `src/main/resources/static/vendor/`. Output uses selectable text and generated page flow, but its layout is separate from the live CSS preview, long-entry pagination needs further validation, and the bundled font is not a Persian/RTL support claim. DOCX should be a separate export generated from structured resume data and evaluated for Word compatibility and RTL support before implementation.
 
 ## Test
 
