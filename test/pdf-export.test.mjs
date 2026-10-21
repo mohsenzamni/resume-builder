@@ -40,6 +40,28 @@ test("PDF definition rejects empty content and non-Classic templates", () => {
   );
 });
 
+test("long resume entries can flow across page boundaries", () => {
+  const resume = {
+    ...createInitialResume(),
+    name: "Alex Example",
+    experience: [{
+      role: "Product Designer",
+      organization: "Example Company",
+      start: "2022",
+      end: "Present",
+      description: "A verified detail. ".repeat(400),
+    }],
+  };
+  const definition = createResumePdfDefinition(resume);
+  const entry = definition.content
+    .flatMap((section) => section.stack ?? [])
+    .find((item) => item.stack?.[0]?.columns);
+
+  assert.ok(entry);
+  assert.equal(entry.unbreakable, undefined);
+  assert.match(JSON.stringify(entry), /A verified detail/);
+});
+
 test("PDF download requests a sanitized filename from the browser generator", async () => {
   const resume = { ...createInitialResume(), name: "../Alex: Example" };
   let call;

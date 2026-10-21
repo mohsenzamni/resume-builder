@@ -27,7 +27,7 @@ function createEntryContent(entry) {
   if (entry.description.trim()) {
     content.push({ text: entry.description, style: "body" });
   }
-  return { stack: content, margin: [0, 0, 0, 11], unbreakable: true };
+  return { stack: content, margin: [0, 0, 0, 11] };
 }
 
 function createSection(title, content) {
